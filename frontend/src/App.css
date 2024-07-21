@@ -60,7 +60,7 @@
 }
 
 .status-ok {
-  color: green;
+  color: rgb(66, 128, 0);
 }
 
 .status-error {
