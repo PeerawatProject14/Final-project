@@ -1,0 +1,102 @@
+/* App.css */
+
+.app-container {
+  text-align: center;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.app-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.form-container {
+  margin-bottom: 20px;
+}
+
+.input-field {
+  padding: 10px;
+  width: 100%;
+  max-width: 300px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.submit-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.loading-container {
+  margin-top: 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+}
+
+.loading-text {
+  margin-top: 10px;
+  font-size: 1rem;
+}
+
+.server-status {
+  margin: 10px 0;
+  font-size: 1rem;
+}
+
+.status-ok {
+  color: green;
+}
+
+.status-error {
+  color: red;
+}
+
+.completed-text, .no-results-text {
+  font-size: 1rem;
+  margin: 10px 0;
+}
+
+.results-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.result-item {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.result-description {
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+.result-similarity {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.error-text {
+  color: red;
+  font-size: 1rem;
+  margin: 10px 0;
+}
