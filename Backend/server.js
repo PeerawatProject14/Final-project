@@ -19,7 +19,7 @@ app.post('/sendData', async (req, res) => {
   const { data } = req.body;
 
   const pythonExecutable = 'C:/Users/ADMIN/AppData/Local/Microsoft/WindowsApps/python3.11.exe';
-  const pythonScriptPath = 'C:/Finalproject101/Backend/pyshell.py';
+  const pythonScriptPath = 'C:/My projects/Final project/Backend/pyshell.py';
 
   try {
     // ใช้ child process เรียกใช้สคริปต์ Python

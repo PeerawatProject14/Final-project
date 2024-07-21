@@ -15,7 +15,7 @@ def get_sentence_embedding(sentence):
     return sentence_embedding
 
 # อ่านข้อมูลจาก CSV
-csv_path = 'C:/Finalproject101/Model/project.csv'
+csv_path = 'C:/My projects/Final project/Model/project.csv'
 df = pd.read_csv(csv_path)
 
 # กำหนดการเข้ารหัสข้อมูลให้เป็น UTF-8
