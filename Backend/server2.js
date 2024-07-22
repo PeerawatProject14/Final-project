@@ -2,7 +2,7 @@ const express = require('express');
 const { spawn } = require('child_process');
 const cors = require('cors');
 const app = express();
-const port = 5000;
+const port = 5001;
 
 // กำหนดค่า CORS
 const corsOptions = {
@@ -19,7 +19,7 @@ app.post('/sendDataToScript1', async (req, res) => {
   const { data } = req.body;
 
   const pythonExecutable = 'C:/Users/ADMIN/AppData/Local/Microsoft/WindowsApps/python3.11.exe';
-  const pythonScriptPath = 'C:/My projects/Final project/Backend/pyshell.py';
+  const pythonScriptPath = 'C:/My projects/Final project/Backend/gemini.py';
 
   try {
     const pythonProcess = spawn(pythonExecutable, [pythonScriptPath]);

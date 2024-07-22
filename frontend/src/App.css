@@ -1,15 +1,54 @@
-/* App.css */
-
 .app-container {
+  font-family: Arial, sans-serif;
   text-align: center;
   padding: 20px;
-  max-width: 600px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .app-title {
   font-size: 2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.server-status {
+  font-size: 1rem;
   margin-bottom: 20px;
+}
+
+.status-ok {
+  color: green;
+}
+
+.status-error {
+  color: red;
+}
+
+.main-container {
+  display: flex;
+  justify-content: space-between; /* ปรับการจัดเรียงให้เป็นซ้ายขวา */
+  gap: 20px;
+}
+
+.script-container-left,
+.script-container-right {
+  flex: 1;
+  max-width: 45%; /* กำหนดความกว้างของแต่ละส่วน */
+}
+
+.script-section {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #007bff;
 }
 
 .form-container {
@@ -17,86 +56,83 @@
 }
 
 .input-field {
-  padding: 10px;
   width: 100%;
-  max-width: 300px;
-  margin-right: 10px;
-  border: 1px solid #ccc;
+  height: 100px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ced4da;
   border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  resize: none;  /* ปิดการย่อขยายขนาด textarea */
 }
 
 .submit-button {
   padding: 10px 20px;
-  border: none;
+  font-size: 16px;
   background-color: #007bff;
-  color: #fff;
+  color: white;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1rem;
 }
 
 .submit-button:disabled {
-  background-color: #6c757d;
+  background-color: #ccc;
   cursor: not-allowed;
 }
 
+.submit-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
 .loading-container {
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .spinner {
   width: 50px;
-  height: 50px;
 }
 
 .loading-text {
-  margin-top: 10px;
   font-size: 1rem;
+  color: #555;
 }
 
-.server-status {
-  margin: 10px 0;
-  font-size: 1rem;
+.completed-text {
+  color: green;
+  font-weight: bold;
 }
 
-.status-ok {
-  color: rgb(66, 128, 0);
-}
-
-.status-error {
+.no-results-text {
   color: red;
-}
-
-.completed-text, .no-results-text {
-  font-size: 1rem;
-  margin: 10px 0;
+  font-weight: bold;
 }
 
 .results-list {
   list-style-type: none;
   padding: 0;
+  margin: 0;
 }
 
 .result-item {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 5px;
   padding: 10px;
-  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
 }
 
 .result-description {
-  font-size: 1rem;
-  margin-bottom: 5px;
+  margin: 0;
 }
 
 .result-similarity {
-  font-size: 0.9rem;
+  font-style: italic;
   color: #555;
 }
 
 .error-text {
   color: red;
-  font-size: 1rem;
-  margin: 10px 0;
+  font-weight: bold;
 }
