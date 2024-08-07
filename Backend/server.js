@@ -18,8 +18,8 @@ app.use(express.json());
 app.post('/sendDataToScript1', async (req, res) => {
   const { data } = req.body;
 
-  const pythonExecutable = 'C:/Users/ADMIN/AppData/Local/Microsoft/WindowsApps/python3.11.exe';
-  const pythonScriptPath = 'C:/My projects/Final project/Backend/pyshell.py';
+  const pythonExecutable = 'C:/Users/admin/AppData/Local/Programs/Python/Python39/python.exe';
+  const pythonScriptPath = 'C:/Users/admin/OneDrive/เอกสาร/GitHub/Final-project/Backend/pyshell.py';
 
   try {
     const pythonProcess = spawn(pythonExecutable, [pythonScriptPath]);

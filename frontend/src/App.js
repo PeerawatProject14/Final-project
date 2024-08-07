@@ -66,7 +66,7 @@ const App = () => {
     setCompleted2(false);  // Reset completed state for Script 2
 
     try {
-      const response = await axios.post(`http://localhost:5000/sendDataToScript2`, {
+      const response = await axios.post(`http://localhost:5001/sendDataToScript2`, {
         data: inputValue2,
       });
 
@@ -181,14 +181,9 @@ const App = () => {
               <p className="no-results-text">ไม่พบข้อมูลที่คล้ายคลึงสำหรับ Script 2</p>
             )}
             {!loading2 && response2.length > 0 && (
-              <ul className="results-list">
-                {response2.map((result, index) => (
-                  <li key={index} className="result-item">
-                    <p className="result-description">{result.description}</p>
-                    <p className="result-similarity">ความคล้าย : {result.similarity_percentage.toFixed(2)}%</p>
-                  </li>
-                ))}
-              </ul>
+              
+                response2
+                 
             )}
           </div>
         </div>

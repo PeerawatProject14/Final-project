@@ -4,7 +4,6 @@ const cors = require('cors');
 const app = express();
 const port = 5001;
 
-// กำหนดค่า CORS
 const corsOptions = {
   origin: 'http://localhost:3000',
   credentials: true,
@@ -14,45 +13,53 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// POST endpoint เพื่อรับข้อมูลจาก React สำหรับ Python Script 1
-app.post('/sendDataToScript1', async (req, res) => {
+app.post('/sendDataToScript2', async (req, res) => {
   const { data } = req.body;
 
-  const pythonExecutable = 'C:/Users/ADMIN/AppData/Local/Microsoft/WindowsApps/python3.11.exe';
-  const pythonScriptPath = 'C:/My projects/Final project/Backend/gemini.py';
+  console.log('Received data from React:', data);
+
+  const pythonExecutable = 'C:/Users/admin/AppData/Local/Programs/Python/Python39/python.exe';
+  const pythonScriptPath = 'C:/Users/admin/OneDrive/เอกสาร/GitHub/Final-project/Backend/gemini.py';
 
   try {
-    const pythonProcess = spawn(pythonExecutable, [pythonScriptPath]);
+    const pythonProcess = spawn(pythonExecutable, [pythonScriptPath, data]);
 
     let responseData = '';
-
-    pythonProcess.stdin.write(data);
-    pythonProcess.stdin.end();
+    let errorData = '';
 
     pythonProcess.stdout.on('data', (data) => {
       responseData += data.toString('utf-8');
     });
 
+    pythonProcess.stderr.on('data', (data) => {
+      errorData += data.toString('utf-8');
+    });
+
     pythonProcess.on('close', (code) => {
       if (code === 0) {
-        res.send(responseData);  // ส่งกลับ React
+        console.log('Python script executed successfully:', responseData);
+        res.send(responseData);
       } else {
-        console.error(`python เกิดปัญหารหัส ${code}`);
-        res.status(500).send('เกิดข้อผิดพลาด');
+        console.error(`Python script exited with code ${code}: ${errorData}`);
+        res.status(500).send(`Python script error: ${errorData}`);
       }
     });
+
+    pythonProcess.on('error', (err) => {
+      console.error('Failed to start Python script:', err);
+      res.status(500).send('Failed to start Python script');
+    });
+
   } catch (error) {
-    console.error('เกิดข้อผิดพลาดจากการติดต่อกับ python :', error);
-    res.status(500).send('เกิดข้อผิดพลาดในการสื่อสารกับ python');
+    console.error('Error communicating with Python script:', error);
+    res.status(500).send('Error communicating with Python script');
   }
 });
 
-// ให้หน้า server แสดงถ้าใช้ได้ปกติ
 app.get('/', (req, res) => {
-  res.send('Server ทำงานปกติ');
+  res.send('Server is running');
 });
 
-// โชว์ว่าที่ terminal ว่า server ทำงานแล้ว
 app.listen(port, () => {
-  console.log(`Node.js server กำลังทำงานอยู่ที่ http://localhost:${port}`);
+  console.log(`Node.js server is running at http://localhost:${port}`);
 });
