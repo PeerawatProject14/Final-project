@@ -1,0 +1,113 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 800px;
+  background-color: #f0f4f8;
+}
+
+.auth-box {
+  background-color: white;
+  padding: 48px; /* 3rem = 48px */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 500px; /* กำหนดความกว้างเป็น 500px */
+  width: 100%;
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 32px; /* 2rem = 32px */
+  font-size: 28px; /* 1.75rem = 28px */
+}
+
+.form-group {
+  margin-bottom: 24px; /* 1.5rem = 24px */
+}
+
+label {
+  display: block;
+  margin-bottom: 12px; /* 0.75rem = 12px */
+  font-size: 16px;
+  color: #555;
+}
+
+input {
+  width: 100%;
+  padding: 14px; /* 0.85rem = 14px */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 16px; /* 1rem = 16px */
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 24px; /* 1.5rem = 24px */
+}
+
+.auth-button:hover {
+  background-color: #0056b3;
+}
+
+p {
+  text-align: center;
+  margin-top: 24px; /* 1.5rem = 24px */
+  font-size: 14px;
+}
+
+p a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+p a:hover {
+  text-decoration: underline;
+}
+
+/* ทำให้ responsive */
+@media (max-width: 768px) {
+  .auth-box {
+    padding: 32px; /* 2rem = 32px */
+    max-width: 400px;
+  }
+
+  h2 {
+    font-size: 24px; /* 1.5rem = 24px */
+  }
+
+  input {
+    padding: 12px; /* 0.75rem = 12px */
+  }
+
+  .auth-button {
+    padding: 12px; /* 0.75rem = 12px */
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 20px; /* 1.25rem = 20px */
+  }
+
+  .auth-box {
+    padding: 24px; /* 1.5rem = 24px */
+  }
+
+  input {
+    padding: 10px; /* 0.6rem = 10px */
+  }
+
+  .auth-button {
+    padding: 10px; /* 0.6rem = 10px */
+    font-size: 14px;
+  }
+}
