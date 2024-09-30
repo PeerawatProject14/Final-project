@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './App.css'; // นำเข้าไฟล์ CSS
 
 function HomePage() {
   const [isGemini, setIsGemini] = useState(false); // State สำหรับจัดการการแสดงเนื้อหา GEMINI
   const [isTransitioning, setIsTransitioning] = useState(false); // State สำหรับจัดการการเปลี่ยนหน้า
+  const [fadeIn, setFadeIn] = useState(false); // State สำหรับจัดการ fade-in
+
+  useEffect(() => {
+    setFadeIn(true); // เริ่มต้น fade-in เมื่อโหลดหน้า
+  }, []);
 
   const handleGeminiClick = () => {
     if (!isGemini) {
@@ -27,8 +32,8 @@ function HomePage() {
   };
 
   return (
-    <div className="d-flex flex-column min-vh-100">
-      <header className="d-flex justify-content-between align-items-center py-3 border-bottom">
+    <div className={`d-flex flex-column min-vh-100 ${fadeIn ? 'fade-in' : 'fade-out'}`}>
+      <header className="header d-flex justify-content-between align-items-center py-3 border-bottom">
         <h1 className="logo mb-0">TH-RESEARCH</h1>
         <nav>
           <ul className="nav">
@@ -57,7 +62,7 @@ function HomePage() {
         </nav>
       </header>
 
-      <main className="d-flex justify-content-center align-items-center flex-grow-1 text-center my-5 position-relative">
+      <main className="home-background d-flex justify-content-center align-items-center flex-grow-1 text-center my-5 position-relative">
         <div
           className={`search-section ${isTransitioning ? 'fade-out' : 'fade-in'}`}
           style={{ maxWidth: '800px', width: '100%', position: 'absolute', opacity: isGemini ? (isTransitioning ? 0 : 1) : (isTransitioning ? 0 : 1) }}
@@ -82,7 +87,7 @@ function HomePage() {
               <h2 style={{ fontSize: '2rem' }}>ค้นหางานวิจัย</h2>
               <p style={{ fontSize: '1.25rem' }}>ใส่ชื่อ หรือ คำอธิบาย ของงานวิจัยที่คุณสนใจ</p>
               <div className="input-group my-3 mx-auto" style={{ maxWidth: '600px' }}>
-                <input type="text" className="form-control" placeholder="ใส่งานวิจัยของคุณที่นี่..." />
+                <input type="text" className="form-control" placeholder="ใสงานวิจัยของคุณที่นี่..." />
                 <button className="btn btn-primary">ค้นหา</button>
               </div>
             </>
@@ -90,7 +95,7 @@ function HomePage() {
         </div>
       </main>
 
-      <footer className="text-center py-3 border-top mt-auto">
+      <footer className="footer text-center py-3 border-top mt-auto">
         <p>© 2566 บริษัทของคุณ</p>
         <nav className="nav justify-content-center">
           <Link className="nav-link" to="/">หน้าหลัก</Link>
