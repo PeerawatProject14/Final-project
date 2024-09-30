@@ -159,3 +159,32 @@ body {
     padding: 10px 20px; /* padding: 10px (top/bottom) 20px (left/right) */
   }
 }
+/* App.css */
+.search-section {
+  transition: opacity 0.5s ease-in-out; /* เฟดแบบนุ่มนวล */
+  opacity: 1; /* เริ่มต้นที่ความชัดเจน */
+  position: absolute; /* ใช้ absolute positioning เพื่อให้จัดการตำแหน่งได้ง่าย */
+  left: 50%; /* เริ่มต้นอยู่ตรงกลาง */
+  transform: translateX(-50%); /* ปรับให้อยู่ตรงกลาง */
+}
+
+/* App.css */
+.search-section {
+  transition: opacity 0.5s ease-in-out;
+  position: absolute; /* ทำให้ไม่แสดงข้างนอก */
+  width: 100%; /* กำหนดความกว้างให้เต็ม */
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}
+
+.transitioning {
+  pointer-events: none; /* ปิดการตอบสนองขณะเปลี่ยน */
+}
+
+
