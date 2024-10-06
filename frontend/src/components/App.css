@@ -183,28 +183,28 @@ input[type="text"] {
 }
 /* App.css */
 .search-section {
-  transition: opacity 0.5s ease-in-out; /* เฟดแบบนุ่มนวล */
-  opacity: 1; /* เริ่มต้นที่ความชัดเจน */
-  position: absolute; /* ใช้ absolute positioning เพื่อให้จัดการตำแหน่งได้ง่าย */
-  left: 50%; /* เริ่มต้นอยู่ตรงกลาง */
-  transform: translateX(-50%); /* ปรับให้อยู่ตรงกลาง */
+  max-width: 1000px; /* ตั้งขนาดสูงสุด */
+  width: 100%; /* ปรับให้ container กว้าง 100% ของหน้าจอ */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.5s ease-in-out;
 }
 
-/* App.css */
-.search-section {
-  transition: opacity 0.5s ease-in-out; /* เฟดแบบนุ่มนวล */
-  opacity: 1; /* เริ่มต้นที่ความชัดเจน */
-  position: absolute; /* ใช้ absolute positioning เพื่อให้จัดการตำแหน่งได้ง่าย */
-  left: 50%; /* เริ่มต้นอยู่ตรงกลาง */
-  transform: translateX(-50%); /* ปรับให้อยู่ตรงกลาง */
+/* Media query สำหรับหน้าจอขนาดเล็ก */
+@media (max-width: 768px) {
+  .search-section {
+    width: 90%; /* ลดขนาด container ให้เหมาะสมกับหน้าจอขนาดเล็ก */
+  }
 }
+
 
 .fade-in {
-  animation: fadeIn 0.5s ease-in-out; /* เอฟเฟคเฟดอิน */
+  animation: fadeIn 0.2s ease-in-out; /* เอฟเฟคเฟดอิน */
 }
 
 .fade-out {
-  animation: fadeOut 0.5s ease-in-out; /* เอฟเฟคเฟดเอาท์ */
+  animation: fadeOut 0.2s ease-in-out; /* เอฟเฟคเฟดเอาท์ */
 }
 
 @keyframes fadeIn {
@@ -232,7 +232,7 @@ input[type="text"] {
 
 /* เพิ่มส่วนนี้เพื่อกำหนดรูปภาพพื้นหลัง */
 .home-background {
-  background-image: url('C:/Users/admin/Downloads/pexels-basiciggy-9250013.jpg'); /* เปลี่ยนเส้นทางให้ตรงกับที่อยู่ของรูปภาพ */
+  background-image: url('C:/My Projects/Final project/frontend/src/images/test.jpg'); /* เปลี่ยนเส้นทางให้ตรงกับที่อยู่ของรูปภาพ */
   background-size: cover;
   background-position: center;
   min-height: 100vh; /* ปรับขนาดให้พอดีกับความสูงของหน้าจอ */

@@ -6,9 +6,16 @@ function HomePage() {
   const [isGemini, setIsGemini] = useState(false); // State สำหรับจัดการการแสดงเนื้อหา GEMINI
   const [isTransitioning, setIsTransitioning] = useState(false); // State สำหรับจัดการการเปลี่ยนหน้า
   const [fadeIn, setFadeIn] = useState(false); // State สำหรับจัดการ fade-in
+  const [serverStatus, setServerStatus] = useState('Loading...'); // State สำหรับสถานะเซิร์ฟเวอร์
 
   useEffect(() => {
     setFadeIn(true); // เริ่มต้น fade-in เมื่อโหลดหน้า
+
+    // ดึงข้อมูลสถานะเซิร์ฟเวอร์
+    fetch('http://localhost:5000/status')
+      .then((response) => response.json())
+      .then((data) => setServerStatus(data.status))
+      .catch((error) => setServerStatus('Unable to fetch server status'));
   }, []);
 
   const handleGeminiClick = () => {
@@ -62,10 +69,17 @@ function HomePage() {
         </nav>
       </header>
 
-      <main className="home-background d-flex justify-content-center align-items-center flex-grow-1 text-center my-5 position-relative">
+      <main className="home-background d-flex justify-content-center align-items-center flex-grow-1 text-center position-relative">
         <div
           className={`search-section ${isTransitioning ? 'fade-out' : 'fade-in'}`}
-          style={{ maxWidth: '800px', width: '100%', position: 'absolute', opacity: isGemini ? (isTransitioning ? 0 : 1) : (isTransitioning ? 0 : 1) }}
+          style={{
+            maxWidth: '100%', // ปรับให้เป็น 100% แทน 1000px
+            width: '70%', // ปรับให้เป็น 100%
+            position: 'absolute',
+            left: '50%', // ตั้งค่าให้แน่นอน
+            transform: 'translateX(-50%)', // เพื่อให้ตรงกลาง
+            opacity: isGemini ? (isTransitioning ? 0 : 1) : (isTransitioning ? 0 : 1),
+          }}
         >
           {isGemini ? ( // แสดงหน้า GEMINI
             <>
@@ -95,13 +109,13 @@ function HomePage() {
         </div>
       </main>
 
-      <footer className="footer text-center py-3 border-top mt-auto">
-        <p>© 2566 บริษัทของคุณ</p>
-        <nav className="nav justify-content-center">
-          <Link className="nav-link" to="/">หน้าหลัก</Link>
-          <Link className="nav-link" to="/about">เกี่ยวกับ</Link>
-          <Link className="nav-link" to="/contact">ติดต่อเรา</Link>
-        </nav>
+      <footer className="footer d-flex justify-content-between align-items-center py-3 border-top mt-auto">
+        <div>
+          <p>© 2566 บริษัทของคุณ</p>
+        </div>
+        <div className="server-status pe-3" style={{ textAlign: 'right' }}>
+          <p>Server Status: {serverStatus}</p>
+        </div>
       </footer>
     </div>
   );
