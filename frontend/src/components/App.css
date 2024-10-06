@@ -70,12 +70,16 @@ body {
 }
 
 .search-section {
-  max-width: 600px;
-  text-align: center;
   background-color: white;
   padding: 50px 30px; /* padding: 50px (top/bottom) 30px (left/right) */
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 1000px; /* ตั้งขนาดสูงสุด */
+  width: 100%; /* ปรับให้ container กว้าง 100% ของหน้าจอ */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.5s ease-in-out;
 }
 
 /* ปรับให้เหมาะสมสำหรับฟอนต์ไทย */
