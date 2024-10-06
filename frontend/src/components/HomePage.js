@@ -1,42 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './App.css'; // นำเข้าไฟล์ CSS
+import './App.css';
 
 function HomePage() {
-  const [isGemini, setIsGemini] = useState(false); // State สำหรับจัดการการแสดงเนื้อหา GEMINI
-  const [isTransitioning, setIsTransitioning] = useState(false); // State สำหรับจัดการการเปลี่ยนหน้า
-  const [fadeIn, setFadeIn] = useState(false); // State สำหรับจัดการ fade-in
-  const [serverStatus, setServerStatus] = useState('Loading...'); // State สำหรับสถานะเซิร์ฟเวอร์
+  const [isGemini, setIsGemini] = useState(false); 
+  const [isTransitioning, setIsTransitioning] = useState(false); 
+  const [fadeIn, setFadeIn] = useState(false); 
+  const [serverStatus, setServerStatus] = useState('Loading...'); 
+  const [researchData, setResearchData] = useState([]); // State สำหรับข้อมูลการวิจัย
 
   useEffect(() => {
-    setFadeIn(true); // เริ่มต้น fade-in เมื่อโหลดหน้า
+    setFadeIn(true);
 
     // ดึงข้อมูลสถานะเซิร์ฟเวอร์
     fetch('http://localhost:5000/status')
       .then((response) => response.json())
       .then((data) => setServerStatus(data.status))
       .catch((error) => setServerStatus('Unable to fetch server status'));
+
+    // ดึงข้อมูลจากฐานข้อมูล
+    fetch('http://localhost:5000/research')
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data); // ดูข้อมูลที่ได้รับ
+        setResearchData(data);
+      })
+      .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
   const handleGeminiClick = () => {
     if (!isGemini) {
-      setIsTransitioning(true); // เริ่มการเปลี่ยนหน้า
+      setIsTransitioning(true);
       setTimeout(() => {
-        setIsGemini(true); // เปลี่ยน state เมื่อกดปุ่ม GEMINI
-        setIsTransitioning(false); // จบการเปลี่ยนหน้า
-      }, 500); // รอเวลาที่ CSS transition ทำงาน
+        setIsGemini(true);
+        setIsTransitioning(false);
+      }, 500);
     }
   };
 
   const handleSearchClick = () => {
     if (isGemini) {
-      setIsTransitioning(true); // เริ่มการเปลี่ยนหน้า
+      setIsTransitioning(true);
       setTimeout(() => {
-        setIsGemini(false); // เปลี่ยน state เมื่อกดปุ่มค้นหา
-        setIsTransitioning(false); // จบการเปลี่ยนหน้า
-      }, 500); // รอเวลาที่ CSS transition ทำงาน
+        setIsGemini(false);
+        setIsTransitioning(false);
+      }, 500);
     }
   };
+
+  const truncateText = (text) => {
+    if (text && typeof text === 'string') {
+        return text.length > 50 ? text.substring(0, 50) + '...' : text;
+    }
+    return ''; // Return an empty string if text is undefined or not a string
+};
 
   return (
     <div className={`d-flex flex-column min-vh-100 ${fadeIn ? 'fade-in' : 'fade-out'}`}>
@@ -70,44 +87,83 @@ function HomePage() {
       </header>
 
       <main className="home-background d-flex justify-content-center align-items-center flex-grow-1 text-center position-relative">
-        <div
-          className={`search-section ${isTransitioning ? 'fade-out' : 'fade-in'}`}
-          style={{
-            maxWidth: '100%', // ปรับให้เป็น 100% แทน 1000px
-            width: '70%', // ปรับให้เป็น 100%
-            position: 'absolute',
-            left: '50%', // ตั้งค่าให้แน่นอน
-            transform: 'translateX(-50%)', // เพื่อให้ตรงกลาง
-            opacity: isGemini ? (isTransitioning ? 0 : 1) : (isTransitioning ? 0 : 1),
-          }}
-        >
-          {isGemini ? ( // แสดงหน้า GEMINI
-            <>
-              <h2 style={{ fontSize: '2rem' }}>GEMINI</h2>
-              <p style={{ fontSize: '1.25rem' }}>กรุณาใส่ข้อมูลการสรุปงานวิจัยของคุณด้านล่างนี้</p>
-              <div className="input-group my-3 mx-auto" style={{ maxWidth: '600px' }}>
-                <input type="text" className="form-control" placeholder="ใส่รายละเอียดของงานวิจัยที่นี่..." />
-                <button className="btn btn-primary">อัพโหลดไฟล์</button>
-              </div>
-              <div className="box-list-section">
-                <div className="d-flex justify-content-center">
-                  <div className="box me-2">ตัวเลือก 1</div>
-                  <div className="box">ตัวเลือก 2</div>
-                </div>
-              </div>
-            </>
-          ) : ( // แสดงหน้าค้นหา
-            <>
-              <h2 style={{ fontSize: '2rem' }}>ค้นหางานวิจัย</h2>
-              <p style={{ fontSize: '1.25rem' }}>ใส่ชื่อ หรือ คำอธิบาย ของงานวิจัยที่คุณสนใจ</p>
-              <div className="input-group my-3 mx-auto" style={{ maxWidth: '600px' }}>
-                <input type="text" className="form-control" placeholder="ใสงานวิจัยของคุณที่นี่..." />
-                <button className="btn btn-primary">ค้นหา</button>
-              </div>
-            </>
-          )}
-        </div>
+          <div
+              className={`search-section ${isTransitioning ? 'fade-out' : 'fade-in'}`}
+              style={{
+                  maxWidth: '100%',
+                  width: '70%',
+                  position: 'absolute',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  opacity: isGemini ? (isTransitioning ? 0 : 1) : (isTransitioning ? 0 : 1),
+              }}
+          >
+              {isGemini ? (
+                  <>
+                  <h2 style={{ fontSize: '2rem' }}>GEMINI</h2>
+                  <p style={{ fontSize: '1.25rem' }}>กรุณาใส่ข้อมูลการสรุปงานวิจัยของคุณด้านล่างนี้</p>
+                  <div className="input-group my-3 mx-auto" style={{ maxWidth: '600px' }}>
+                    <input type="text" className="form-control" placeholder="ใส่รายละเอียดของงานวิจัยที่นี่..." />
+                    <button className="btn btn-primary">อัพโหลดไฟล์</button>
+                  </div>
+                  <div className="box-list-section">
+                    <div className="d-flex justify-content-center">
+                      <div className="box me-2">ตัวเลือก 1</div>
+                      <div className="box">ตัวเลือก 2</div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                  <>
+                      {/* ส่วนค้นหา */}
+                      <h2 style={{ fontSize: '2rem' }}>ค้นหางานวิจัย</h2>
+                      <p style={{ fontSize: '1.25rem' }}>ใส่ชื่อ หรือ คำอธิบาย ของงานวิจัยที่คุณสนใจ</p>
+                      <div className="input-group my-3 mx-auto" style={{ maxWidth: '600px' }}>
+                          <input type="text" className="form-control" placeholder="ใสงานวิจัยของคุณที่นี่..." />
+                          <button className="btn btn-primary">ค้นหา</button>
+                      </div>
+
+                      {/* แสดงตารางข้อมูลการวิจัย */}
+                      <h3>ข้อมูลการวิจัย</h3>
+                      <div style={{ maxHeight: '400px', overflowY: 'auto' }}> {/* กำหนดความสูงสูงสุดและเพิ่มการเลื่อน */}
+                          <table className="table">
+                              <thead>
+                                  <tr>
+                                      <th>ID</th>
+                                      <th>ชื่อเรื่อง</th>
+                                      <th>ชื่อนักวิจัย</th>
+                                      <th>ชื่อนักวิจัยร่วม</th>
+                                      <th>หน่วยงาน</th>
+                                      <th>ปีที่เผยแพร่</th>
+                                      <th>อ้างอิง URL</th>
+                                      <th>คำอธิบาย</th>
+                                      <th>คำสำคัญ</th>
+                                      <th>เอกสารแนบ</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  {researchData.map((research) => (
+                                      <tr key={research.id}>
+                                          <td>{research.id}</td>
+                                          <td>{truncateText(research.ชื่อเรื่อง)}</td>
+                                          <td>{truncateText(research.ชื่อนักวิจัย)}</td>
+                                          <td>{truncateText(research.ชื่อนักวิจัยร่วม)}</td>
+                                          <td>{truncateText(research.หน่วยงาน)}</td>
+                                          <td>{truncateText(research.ปีที่เผยแพร่)}</td>
+                                          <td>{truncateText(research.อ้างอิงURL)}</td>
+                                          <td>{truncateText(research.คำอธิบาย)}</td>
+                                          <td>{truncateText(research.คำสำคัญ)}</td>
+                                          <td>{truncateText(research.เอกสารแนบ)}</td>
+                                      </tr>
+                                  ))}
+                              </tbody>
+                          </table>
+                      </div>
+                  </>
+              )}
+          </div>
       </main>
+
 
       <footer className="footer d-flex justify-content-between align-items-center py-3 border-top mt-auto">
         <div>

@@ -186,14 +186,7 @@ input[type="text"] {
   }
 }
 /* App.css */
-.search-section {
-  max-width: 1000px; /* ตั้งขนาดสูงสุด */
-  width: 100%; /* ปรับให้ container กว้าง 100% ของหน้าจอ */
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: opacity 0.5s ease-in-out;
-}
+
 
 /* Media query สำหรับหน้าจอขนาดเล็ก */
 @media (max-width: 768px) {
@@ -236,7 +229,7 @@ input[type="text"] {
 
 /* เพิ่มส่วนนี้เพื่อกำหนดรูปภาพพื้นหลัง */
 .home-background {
-  background-image: url('C:/My Projects/Final project/frontend/src/images/test.jpg'); /* เปลี่ยนเส้นทางให้ตรงกับที่อยู่ของรูปภาพ */
+  background-image: url('C:/Users/admin/OneDrive/เอกสาร/GitHub/Final-project/frontend/src/images/test.jpg'); /* เปลี่ยนเส้นทางให้ตรงกับที่อยู่ของรูปภาพ */
   background-size: cover;
   background-position: center;
   min-height: 100vh; /* ปรับขนาดให้พอดีกับความสูงของหน้าจอ */
@@ -244,3 +237,17 @@ input[type="text"] {
   overflow: hidden; /* ป้องกันไม่ให้มีการเลื่อนรูปภาพ */
 }
 
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
