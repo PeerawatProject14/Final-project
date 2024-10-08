@@ -87,11 +87,11 @@ function HomePage() {
       </header>
 
       <main className="home-background d-flex justify-content-center align-items-center flex-grow-1 text-center position-relative">
-          <div
-              className={`search-section ${isTransitioning ? 'fade-out' : 'fade-in'}`}
+          <div className={`search-section ${isTransitioning ? 'fade-out' : 'fade-in'}`}
               style={{
                   maxWidth: '100%',
                   width: '70%',
+                  height : '90%',
                   position: 'absolute',
                   left: '50%',
                   transform: 'translateX(-50%)',
@@ -114,52 +114,37 @@ function HomePage() {
                   </div>
                 </>
               ) : (
-                  <>
-                      {/* ส่วนค้นหา */}
-                      <h2 style={{ fontSize: '2rem' }}>ค้นหางานวิจัย</h2>
-                      <p style={{ fontSize: '1.25rem' }}>ใส่ชื่อ หรือ คำอธิบาย ของงานวิจัยที่คุณสนใจ</p>
+                <>
+                  <h2 style={{ fontSize: '2rem' }}>ค้นหางานวิจัย</h2>
+                    <p style={{ fontSize: '1.25rem' }}>ใส่ชื่อ หรือ คำอธิบาย ของงานวิจัยที่คุณสนใจ</p>
                       <div className="input-group my-3 mx-auto" style={{ maxWidth: '600px' }}>
-                          <input type="text" className="form-control" placeholder="ใสงานวิจัยของคุณที่นี่..." />
-                          <button className="btn btn-primary">ค้นหา</button>
+                        <input type="text" className="form-control" placeholder="ใสงานวิจัยของคุณที่นี่..." />
+                        <button className="btn btn-primary">ค้นหา</button>
                       </div>
-
-                      {/* แสดงตารางข้อมูลการวิจัย */}
-                      <h3>ข้อมูลการวิจัย</h3>
-                      <div style={{ maxHeight: '400px', overflowY: 'auto' }}> {/* กำหนดความสูงสูงสุดและเพิ่มการเลื่อน */}
-                          <table className="table">
-                              <thead>
-                                  <tr>
-                                      <th>ID</th>
-                                      <th>ชื่อเรื่อง</th>
-                                      <th>ชื่อนักวิจัย</th>
-                                      <th>ชื่อนักวิจัยร่วม</th>
-                                      <th>หน่วยงาน</th>
-                                      <th>ปีที่เผยแพร่</th>
-                                      <th>อ้างอิง URL</th>
-                                      <th>คำอธิบาย</th>
-                                      <th>คำสำคัญ</th>
-                                      <th>เอกสารแนบ</th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                                  {researchData.map((research) => (
-                                      <tr key={research.id}>
-                                          <td>{research.id}</td>
-                                          <td>{truncateText(research.ชื่อเรื่อง)}</td>
-                                          <td>{truncateText(research.ชื่อนักวิจัย)}</td>
-                                          <td>{truncateText(research.ชื่อนักวิจัยร่วม)}</td>
-                                          <td>{truncateText(research.หน่วยงาน)}</td>
-                                          <td>{truncateText(research.ปีที่เผยแพร่)}</td>
-                                          <td>{truncateText(research.อ้างอิงURL)}</td>
-                                          <td>{truncateText(research.คำอธิบาย)}</td>
-                                          <td>{truncateText(research.คำสำคัญ)}</td>
-                                          <td>{truncateText(research.เอกสารแนบ)}</td>
-                                      </tr>
-                                  ))}
-                              </tbody>
-                          </table>
+                    <h3>ข้อมูลการวิจัย</h3>
+                    <div style={{ maxHeight: '550px', overflowY: 'auto' }} className="mb-7">
+                      <div className="d-flex flex-column justify-content-center align-items-center gap-3">
+                        {researchData.map((research) => (
+                          <div
+                            key={research.id}
+                            style={{
+                              width: '80%', // การ์ดยืดเต็มความกว้าง
+                              height:'80%',
+                              border: '1px solid #ccc',
+                              borderRadius: '10px',
+                              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                              padding: '40px',
+                              backgroundColor: '#fff',
+                            }}
+                          >
+                            <h4>{truncateText(research.ชื่อเรื่อง)}</h4>
+                            <p><strong>ชื่อนักวิจัย:</strong> {truncateText(research.ชื่อนักวิจัย)}</p>
+                            <p><strong>คำสำคัญ:</strong> {truncateText(research.คำสำคัญ)}</p>
+                          </div>
+                        ))}
                       </div>
-                  </>
+                    </div>
+                </>
               )}
           </div>
       </main>
