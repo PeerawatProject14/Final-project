@@ -53,7 +53,9 @@
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 80%; /* ให้ขนาดการ์ดไม่เต็มจอ */
-    max-width: 800px; /* กำหนดขนาดสูงสุด */
+    max-width: 900px; /* กำหนดขนาดสูงสุด */
+    max-height: 900px;
+    overflow-y: auto;
   }
   
   .research-title {
@@ -61,3 +63,8 @@
     margin-bottom: 10px;
   }
   
+  .center-button {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem; /* กำหนดระยะห่างจากองค์ประกอบอื่น ๆ */
+  }
