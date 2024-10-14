@@ -15,7 +15,7 @@
   width: 100%;
   opacity: 0; /* เริ่มต้นด้วยความโปร่งใส */
   transform: translateY(-20px); /* เลื่อนขึ้นเล็กน้อย */
-  animation: fadeIn 0.5s forwards; /* เพิ่มแอนิเมชันเมื่อโหลด */
+  animation: fadeIn 0.7s forwards; /* เพิ่มแอนิเมชันเมื่อโหลด */
 }
 
 @keyframes fadeIn {

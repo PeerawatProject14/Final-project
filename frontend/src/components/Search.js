@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const Search = ({ researchData, truncateText }) => {
+const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
   const [searchQuery, setSearchQuery] = useState(''); // เก็บค่าการค้นหา
   const [filteredData, setFilteredData] = useState([]); // เริ่มต้นเป็น array ว่าง
 
@@ -41,30 +41,34 @@ const Search = ({ researchData, truncateText }) => {
           <div style={{ maxHeight: '550px', overflowY: 'auto' }} className="mb-7">
             <div className="d-flex flex-column justify-content-center align-items-center gap-3">
               {filteredData.map((research) => (
-                <Link
-                  to="/research"
-                  state={{ research }} // ส่งข้อมูล research ไปยังหน้าถัดไป
-                  key={research.id}
-                  style={{ width: '80%' }}
-                >
-                  <div
+                <div key={research.id} style={{ width: '80%' }}>
+                  <Link
+                    to="/research"
+                    state={{ research }} // ส่งข้อมูล research ไปยังหน้าถัดไป
                     style={{
-                      minHeight: '100px', // ความสูงขั้นต่ำสำหรับกล่อง
-                      maxHeight: '300px', // ความสูงสูงสุดสำหรับกล่อง
-                      overflow: 'hidden', // ซ่อนข้อความส่วนเกิน
+                      display: 'block',
+                      minHeight: '100px',
+                      maxHeight: '300px',
+                      overflow: 'hidden',
                       border: '1px solid #ccc',
                       borderRadius: '10px',
                       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                       padding: '40px',
                       backgroundColor: '#fff',
-                      transition: 'max-height 0.3s ease', // เพิ่มการเปลี่ยนแปลงความสูงอย่างนุ่มนวล
+                      transition: 'max-height 0.3s ease',
                     }}
                   >
                     <h4>{truncateText(research.ชื่อเรื่อง)}</h4>
                     <p><strong>ชื่อนักวิจัย:</strong> {truncateText(research.ชื่อนักวิจัย)}</p>
                     <p><strong>คำสำคัญ:</strong> {truncateText(research.คำสำคัญ)}</p>
-                  </div>
-                </Link>
+                  </Link>
+                  <button 
+                    onClick={() => handleBookmark(research.id)} 
+                    className={`btn ${bookmarks.includes(research.id) ? 'btn-warning' : 'btn-outline-warning'} mt-2`}
+                  >
+                    {bookmarks.includes(research.id) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}
+                  </button>
+                </div>
               ))}
             </div>
           </div>

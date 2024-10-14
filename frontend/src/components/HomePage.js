@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import './App.css';
 import Gemini from './Gemini'; 
 import Search from './Search'; 
+import LoginPage from './LoginPage';
 
 function HomePage() {
   const [isGemini, setIsGemini] = useState(false); 
   const [isTransitioning, setIsTransitioning] = useState(false); 
   const [fadeIn, setFadeIn] = useState(false); 
   const [serverStatus, setServerStatus] = useState('Loading...'); 
-  const [researchData, setResearchData] = useState([]); // State สำหรับข้อมูลการวิจัย
-  const navigate = useNavigate(); // เพิ่ม useNavigate สำหรับการเปลี่ยนเส้นทาง
+  const [researchData, setResearchData] = useState([]); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState(''); 
+  const [userId, setUserId] = useState(null); // ประกาศ userId ที่นี่
+  const [bookmarks, setBookmarks] = useState([]); 
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     setFadeIn(true);
-
+    
     // ดึงข้อมูลสถานะเซิร์ฟเวอร์
     fetch('http://localhost:5000/status')
       .then((response) => response.json())
@@ -23,13 +28,33 @@ function HomePage() {
 
     // ดึงข้อมูลจากฐานข้อมูล
     fetch('http://localhost:5000/research')
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Received data:", data); // ตรวจสอบโครงสร้างข้อมูลที่ได้
-      setResearchData(Array.isArray(data) ? data : []); // ตรวจสอบว่า data เป็น array หรือไม่
-    })
-    .catch((error) => console.error('Error fetching data:', error));  
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Received data:", data);
+        setResearchData(Array.isArray(data) ? data : []);
+      })
+      .catch((error) => console.error('Error fetching data:', error));
+
+    // ตรวจสอบว่าเข้าสู่ระบบหรือไม่
+    const token = localStorage.getItem('token');
+    const email = localStorage.getItem('email'); 
+    const id = localStorage.getItem('userId'); // ดึง userId จาก localStorage
+    if (token && email) {
+      setIsLoggedIn(true);
+      setUserEmail(email);
+      setUserId(id); // ตั้งค่า userId ที่นี่
+    }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    localStorage.removeItem('userId'); // ลบ userId ด้วย
+    setIsLoggedIn(false);
+    setUserEmail('');
+    setUserId(null); // ตั้งค่า userId เป็น null
+    navigate('/login'); 
+  };
 
   const handleGeminiClick = () => {
     if (!isGemini) {
@@ -41,8 +66,41 @@ function HomePage() {
     }
   };
 
+  const handleBookmark = async (researchId) => {
+    const userId = localStorage.getItem('userId'); // ดึง userId จาก localStorage
+    console.log('Checking if bookmark exists:', { research_id: researchId, user_id: userId });
+
+    // ตรวจสอบว่ามี bookmark นี้อยู่แล้วหรือไม่
+    const checkResponse = await fetch(`http://localhost:5000/bookmarks/check?research_id=${researchId}&user_id=${userId}`);
+    const checkData = await checkResponse.json();
+
+    if (checkData.exists) {
+        alert('Bookmark already exists.');
+        return; // ออกไปถ้ามีอยู่แล้ว
+    }
+
+    console.log('Sending bookmark:', { research_id: researchId, user_id: userId });
+
+    try {
+        const response = await fetch('http://localhost:5000/bookmarks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ research_id: researchId, user_id: userId }),
+        });
+
+        const data = await response.json();
+        console.log('Response from server:', data);
+    } catch (error) {
+        console.error('Error adding bookmark:', error);
+    }
+};
+
+  
+
   const handleBookmarkClick = () => {
-    navigate('/bookmark'); // เปลี่ยนเส้นทางไปยังหน้า Bookmark
+    navigate('/bookmark'); 
   };
 
   const handleSearchClick = () => {
@@ -57,9 +115,9 @@ function HomePage() {
 
   const truncateText = (text) => {
     if (text && typeof text === 'string') {
-        return text.length > 50 ? text.substring(0, 50) + '...' : text;
+      return text.length > 50 ? text.substring(0, 50) + '...' : text;
     }
-    return ''; // Return an empty string if text is undefined or not a string
+    return '';
   };
 
   return (
@@ -83,11 +141,24 @@ function HomePage() {
                 ค้นหา
               </button>
             </li>
-            <li className="nav-item">
-              <Link to="/login" className="btn btn-primary">
-                เข้าสู่ระบบ
-              </Link>
-            </li>
+            {isLoggedIn ? (
+              <>
+                <li className="nav-item">
+                  <span className="navbar-text">Logged in as: {userEmail} (User ID: {userId})</span>
+                </li>
+                <li className="nav-item">
+                  <button onClick={handleLogout} className="btn btn-danger">
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li className="nav-item">
+                <Link to="/login" className="btn btn-primary">
+                  เข้าสู่ระบบ
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
       </header>
@@ -102,7 +173,12 @@ function HomePage() {
           {isGemini ? (
             <Gemini />
           ) : (
-            <Search researchData={researchData} truncateText={truncateText} />
+            <Search 
+              researchData={researchData} 
+              truncateText={truncateText} 
+              handleBookmark={handleBookmark} 
+              bookmarks={bookmarks} 
+            />
           )}
         </div>
       </main>

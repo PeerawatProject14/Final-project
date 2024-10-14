@@ -1,0 +1,43 @@
+.bookmark-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .bookmark-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .bookmark-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  
+  .bookmark-content h4 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .bookmark-content p {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+  
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
+  

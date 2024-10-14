@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // เพิ่ม useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate(); // ใช้สำหรับนำทางไปยังหน้าอื่น
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [userId, setUserId] = useState(null); // สถานะสำหรับ userId
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await fetch('http://localhost:5000/login', {
@@ -17,27 +20,28 @@ function LoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }), // ส่งรหัสผ่านที่ไม่ได้เข้ารหัสไปยัง server
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
+      setLoading(false);
 
       if (response.ok) {
-        // ถ้าการเข้าสู่ระบบสำเร็จ
-        alert('Login successful: ' + JSON.stringify(data));
-        
-        // ทำการเก็บ Token หรือข้อมูลการเข้าสู่ระบบถ้ามี
         localStorage.setItem('token', data.token);
-
-        // นำทางไปยังหน้าอื่นเช่นหน้า Dashboard
-        navigate('/'); 
+        localStorage.setItem('email', email);
+        localStorage.setItem('userId', data.userId); // เก็บ userId ลงใน localStorage
+        setUserId(data.userId); // อัปเดต userId state
+        
+        alert('Login successful: ' + JSON.stringify(data));
+      
+        navigate('/');
       } else {
-        // ถ้ามีข้อผิดพลาด
         setErrorMessage(data.message);
       }
     } catch (error) {
       console.error('Error during login:', error);
       setErrorMessage('Something went wrong. Please try again.');
+      setLoading(false);
     }
   };
 
@@ -46,6 +50,9 @@ function LoginPage() {
       <div className="auth-box border shadow p-4">
         <h2 className="text-center mb-4">เข้าสู่ระบบ</h2>
         {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+        
+        {loading && <div className="alert alert-info">Loading...</div>}
+        
         <form onSubmit={handleSubmit}>
           <div className="form-group mb-3">
             <label htmlFor="email">อีเมล</label>
@@ -71,7 +78,9 @@ function LoginPage() {
               required 
             />
           </div>
-          <button type="submit" className="auth-button btn btn-primary w-100">เข้าสู่ระบบ</button>
+          <button type="submit" className="auth-button btn btn-primary w-100" disabled={loading}>
+            {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+          </button>
         </form>
         <p className="text-center mt-3">
           ยังไม่มีบัญชี? <Link to="/register">สมัครสมาชิก</Link> หรือ <Link to="/">Guest</Link>

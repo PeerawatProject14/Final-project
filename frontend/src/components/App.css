@@ -197,11 +197,11 @@ input[type="text"] {
 
 
 .fade-in {
-  animation: fadeIn 0.2s ease-in-out; /* เอฟเฟคเฟดอิน */
+  animation: fadeIn 0.3s ease-in-out; /* เอฟเฟคเฟดอิน */
 }
 
 .fade-out {
-  animation: fadeOut 0.2s ease-in-out; /* เอฟเฟคเฟดเอาท์ */
+  animation: fadeOut 0.3s ease-in-out; /* เอฟเฟคเฟดเอาท์ */
 }
 
 @keyframes fadeIn {

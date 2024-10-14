@@ -139,6 +139,79 @@ app.get('/research', async (req, res) => {
   }
 });
 
+// Endpoint สำหรับเพิ่ม bookmark
+app.post('/bookmarks', async (req, res) => {
+  const { research_id } = req.body;
+  const user_id = req.body.user_id; // คุณสามารถส่ง user_id มาจาก frontend ได้
+
+  if (!research_id || !user_id) {
+    return res.status(400).json({ message: 'Research ID and user ID are required' });
+  }
+
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
+    const [result] = await connection.execute(
+      'INSERT INTO bookmark (research_id, user_id) VALUES (?, ?)',
+      [research_id, user_id]
+    );
+
+    res.status(201).json({ id: result.insertId, research_id, user_id });
+  } catch (err) {
+    console.error('Error adding bookmark:', err);
+    res.status(500).json({ message: err.message });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+});
+
+// Endpoint สำหรับดึง bookmark ของผู้ใช้
+app.get('/bookmarks/:user_id', async (req, res) => {
+  const user_id = req.params.user_id;
+
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
+    const [results] = await connection.execute(
+      'SELECT * FROM bookmark WHERE user_id = ?',
+      [user_id]
+    );
+    res.json(results);
+  } catch (err) {
+    console.error('Error fetching bookmarks:', err);
+    res.status(500).json({ message: err.message });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+});
+
+app.get('/research/:research_id', async (req, res) => {
+  const research_id = req.params.research_id;
+
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
+    const [results] = await connection.execute(
+      'SELECT * FROM research WHERE id = ?',
+      [research_id]
+    );
+    res.json(results[0]); // ส่งข้อมูล research แค่ 1 ตัว
+  } catch (err) {
+    console.error('Error fetching research:', err);
+    res.status(500).json({ message: err.message });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+});
+
+
+
 // เริ่มต้นเซิร์ฟเวอร์
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
