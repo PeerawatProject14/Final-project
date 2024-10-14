@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import './App.css';
 import Gemini from './Gemini'; 
 import Search from './Search'; 
-
 
 function HomePage() {
   const [isGemini, setIsGemini] = useState(false); 
@@ -11,6 +10,7 @@ function HomePage() {
   const [fadeIn, setFadeIn] = useState(false); 
   const [serverStatus, setServerStatus] = useState('Loading...'); 
   const [researchData, setResearchData] = useState([]); // State สำหรับข้อมูลการวิจัย
+  const navigate = useNavigate(); // เพิ่ม useNavigate สำหรับการเปลี่ยนเส้นทาง
 
   useEffect(() => {
     setFadeIn(true);
@@ -23,12 +23,12 @@ function HomePage() {
 
     // ดึงข้อมูลจากฐานข้อมูล
     fetch('http://localhost:5000/research')
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data); // ดูข้อมูลที่ได้รับ
-        setResearchData(data);
-      })
-      .catch((error) => console.error('Error fetching data:', error));
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Received data:", data); // ตรวจสอบโครงสร้างข้อมูลที่ได้
+      setResearchData(Array.isArray(data) ? data : []); // ตรวจสอบว่า data เป็น array หรือไม่
+    })
+    .catch((error) => console.error('Error fetching data:', error));  
   }, []);
 
   const handleGeminiClick = () => {
@@ -39,6 +39,10 @@ function HomePage() {
         setIsTransitioning(false);
       }, 500);
     }
+  };
+
+  const handleBookmarkClick = () => {
+    navigate('/bookmark'); // เปลี่ยนเส้นทางไปยังหน้า Bookmark
   };
 
   const handleSearchClick = () => {
@@ -70,10 +74,9 @@ function HomePage() {
               </button>
             </li>
             <li className="nav-item">
-              <button className="btn btn-link">BOOKMARK</button>
-            </li>
-            <li className="nav-item">
-              <button className="btn btn-link">หมวดหมู่</button>
+              <button onClick={handleBookmarkClick} className="btn btn-link">
+                BOOKMARK
+              </button>
             </li>
             <li className="nav-item">
               <button onClick={handleSearchClick} className="btn btn-link">
@@ -93,12 +96,6 @@ function HomePage() {
         <div
           className={`search-section ${isTransitioning ? 'fade-out' : 'fade-in'}`}
           style={{
-            maxWidth: '100%',
-            width: '70%',
-            height: '90%',
-            position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
             opacity: isGemini ? (isTransitioning ? 0 : 1) : (isTransitioning ? 0 : 1),
           }}
         >

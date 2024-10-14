@@ -253,15 +253,16 @@ input[type="text"] {
 }
 
 /* สไตล์สำหรับการ์ดงานวิจัย */
+
 .research-card {
-  width: 80%; /* การ์ดยืดเต็มความกว้าง */
-  height: 80%;
   border: 1px solid #ccc;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 40px;
+  border-radius: 5px;
+  padding: 15px;
+  margin: 10px 0;
   background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
 
 /* Transition effects */
 

@@ -1,13 +1,62 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 
 function RegisterPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const navigate = useNavigate(); // ใช้ useNavigate แทน useHistory
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    // ตรวจสอบความถูกต้องของรหัสผ่าน
+    const passwordCriteria = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!password.match(passwordCriteria)) {
+      setError('รหัสผ่านต้องมีตัวพิมพ์เล็ก ตัวพิมพ์ใหญ่ ตัวเลข และมีความยาวมากกว่า 8 ตัวอักษร');
+      return;
+    }
+
+    // ตรวจสอบรหัสผ่าน
+    if (password !== confirmPassword) {
+      setError('รหัสผ่านไม่ตรงกัน');
+      return;
+    }
+
+    try {
+      // ส่งข้อมูลลงทะเบียนไปยังเซิร์ฟเวอร์โดยไม่เข้ารหัสรหัสผ่าน
+      const response = await fetch('http://localhost:5000/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }), // ส่งรหัสผ่านตรงๆ ไปที่เซิร์ฟเวอร์
+      });
+
+      if (response.ok) {
+        setSuccess('ลงทะเบียนสำเร็จ!');
+        navigate('/login'); // เปลี่ยนเส้นทางไปยังหน้าเข้าสู่ระบบ
+      } else {
+        const data = await response.json();
+        setError('เกิดข้อผิดพลาดในการลงทะเบียน: ' + data.message);
+      }
+    } catch (err) {
+      setError('เกิดข้อผิดพลาดในการลงทะเบียน: ' + err.message);
+    }
+  };
+
   return (
     <div className="auth-container d-flex justify-content-center align-items-center vh-100">
       <div className="auth-box border shadow p-4">
         <h2 className="text-center mb-4">สมัครสมาชิก</h2>
-        <form>
+        <form onSubmit={handleSubmit}>
+          {error && <div className="alert alert-danger">{error}</div>}
+          {success && <div className="alert alert-success">{success}</div>}
           <div className="mb-3 form-group">
             <label htmlFor="email" className="form-label">อีเมล</label>
             <input 
@@ -15,6 +64,8 @@ function RegisterPage() {
               id="email" 
               className="form-control" 
               placeholder="อีเมลของคุณ" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required 
             />
           </div>
@@ -24,7 +75,9 @@ function RegisterPage() {
               type="password" 
               id="password" 
               className="form-control" 
-              placeholder="รหัสผ่านของคุณ" 
+              placeholder="รหัสผ่านของคุณ (อย่างน้อย 8 ตัวอักษร, มีตัวพิมพ์เล็ก ตัวพิมพ์ใหญ่ และตัวเลข)" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required 
             />
           </div>
@@ -35,6 +88,8 @@ function RegisterPage() {
               id="confirmPassword" 
               className="form-control" 
               placeholder="ยืนยันรหัสผ่านของคุณ" 
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required 
             />
           </div>

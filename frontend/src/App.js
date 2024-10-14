@@ -4,6 +4,7 @@ import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import HomePage from './components/HomePage'; // import หน้า Homepage
 import ResearchData from './components/ResearchData';
+import BookmarkPage from './components/Bookmark';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/research" element={<ResearchData />} />
+        <Route path="/bookmark" element={<BookmarkPage />} />
       </Routes>
     </Router>
   );
