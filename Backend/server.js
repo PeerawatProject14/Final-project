@@ -1,12 +1,45 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
-const crypto = require('crypto'); // ใช้สำหรับเข้ารหัสรหัสผ่านด้วย PBKDF2
+const crypto = require('crypto');
+const bodyParser = require('body-parser');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const port = 5000;
 
+// ใส่ API Key ของคุณตรงนี้
+const apiKey = "AIzaSyAplUkJAyT-CVAnwJK6dGB3GInGZh4_qCE";
+const genAI = new GoogleGenerativeAI(apiKey);
+
+// กำหนด corsOptions
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })); // เรียกใช้ CORS middleware ก่อน middleware อื่น ๆ
 app.use(express.json()); // เพิ่ม middleware เพื่อให้สามารถรับ JSON body ได้
+app.use(bodyParser.json());
+
+app.post('/api/generate', async (req, res) => {
+  const { input } = req.body;
+
+  // ตรวจสอบว่ามีการส่ง input มาหรือไม่
+  if (!input) {
+    return res.status(400).json({ error: 'Input is required' });
+  }
+
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const result = await model.generateContent([input]);
+    
+    // ส่งผลลัพธ์เป็น JSON
+    res.json({ output: result.response.text() });
+  } catch (error) {
+    console.error("Error generating content:", error);
+    res.status(500).json({ error: 'Error generating content' });
+  }
+});
 
 const dbConfig = {
   host: 'localhost',
@@ -21,7 +54,11 @@ const corsOptions = {
   optionsSuccessStatus: 200,
 };
 
-app.use(cors(corsOptions));
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+    optionsSuccessStatus: 200,
+  }));
 
 // ฟังก์ชันสำหรับเข้ารหัสรหัสผ่านด้วย PBKDF2
 async function hashPassword(password, salt = null) {

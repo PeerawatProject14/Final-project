@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Gemini from './Gemini';
+import Search from './Search'; // สมมติว่าคุณมีคอมโพเนนต์ Search อยู่
 
 const ParentComponent = () => {
   const [researchData, setResearchData] = useState([]);
@@ -29,6 +31,12 @@ const ParentComponent = () => {
 
   return (
     <div>
+      {/* แสดงคอมโพเนนต์ Gemini พร้อมข้อมูลที่ต้องการ */}
+      <Gemini 
+        researchDetails={researchData.length > 0 ? researchData[0].description : ''} 
+      />
+      
+      {/* แสดงคอมโพเนนต์ Search พร้อมข้อมูลการวิจัย */}
       <Search 
         researchData={researchData} 
         truncateText={(text) => text.length > 20 ? text.slice(0, 20) + '...' : text} 
