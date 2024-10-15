@@ -9,7 +9,7 @@ const app = express();
 const port = 5000;
 
 // ใส่ API Key ของคุณตรงนี้
-const apiKey = "AIzaSyAplUkJAyT-CVAnwJK6dGB3GInGZh4_qCE";
+const apiKey = "api";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 // กำหนด corsOptions
