@@ -9,7 +9,7 @@ const app = express();
 const port = 5000;
 
 // ใส่ API Key ของคุณตรงนี้
-const apiKey = "api";
+const apiKey = "API KEY";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 // กำหนด corsOptions
@@ -30,7 +30,7 @@ app.post('/api/generate', async (req, res) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro",systemInstruction: "สรุปบทความงานวิจัย" });
     const result = await model.generateContent([input]);
     
     // ส่งผลลัพธ์เป็น JSON
@@ -40,6 +40,29 @@ app.post('/api/generate', async (req, res) => {
     res.status(500).json({ error: 'Error generating content' });
   }
 });
+
+// Endpoint สำหรับการบันทึกข้อมูลลงฐานข้อมูล
+app.post('/api/save', async (req, res) => {
+  const { output, user_id } = req.body;
+
+  if (!output || !user_id) {
+    return res.status(400).json({ error: 'Output and user_id are required' });
+  }
+
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
+    const sql = 'INSERT INTO gemini (summary, user_id) VALUES (?, ?)';
+    const [result] = await connection.execute(sql, [output, user_id]);
+    res.json({ message: 'บันทึกข้อมูลสำเร็จ', id: result.insertId });
+  } catch (err) {
+    console.error('Error saving data:', err);
+    res.status(500).json({ error: 'Error saving data' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
 
 const dbConfig = {
   host: 'localhost',
