@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import TextField from '@mui/material/TextField';
 
 const Gemini = () => {
   const [inputText, setInputText] = useState('');
@@ -45,10 +46,10 @@ const Gemini = () => {
       <p style={{ fontSize: '1.25rem' }}>กรุณาใส่ข้อมูลที่คุณต้องการสรุปงานวิจัยของคุณด้านล่างนี้</p>
       <form onSubmit={handleSubmit}>
         <div className="input-group my-3 mx-auto" style={{ maxWidth: '600px' }}>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="ใส่รายละเอียดของงานวิจัยที่นี่..."
+          <TextField
+            label="ใส่รายละเอียดของงานวิจัยที่นี่..."
+            variant="outlined"
+            fullWidth
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
           />

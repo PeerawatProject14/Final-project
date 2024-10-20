@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import TextField from '@mui/material/TextField';
 
 const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
   const [searchQuery, setSearchQuery] = useState(''); // เก็บค่าการค้นหา
@@ -19,15 +20,17 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
     }
   };
 
+
+
   return (
     <>
       <h2 style={{ fontSize: '2rem', textAlign: 'center' }}>ค้นหางานวิจัย</h2>
       <p style={{ fontSize: '1.25rem', textAlign: 'center' }}>ใส่ชื่อ หรือ คำอธิบาย ของงานวิจัยที่คุณสนใจ</p>
       <div className="input-group my-3 mx-auto" style={{ maxWidth: '600px' }}>
-        <input
-          type="text"
-          className="form-control"
-          placeholder="ใสงานวิจัยของคุณที่นี่..."
+        <TextField
+          label="ใส่ชื่อ หรือ คำอธิบาย"
+          variant="outlined"
+          fullWidth
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)} // อัปเดตค่าการค้นหา
         />
