@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import TextField from '@mui/material/TextField';
 
 const Gemini = () => {
   const [inputText, setInputText] = useState('');
   const [result, setResult] = useState(null);
-  const [userId, setUserId] = useState('1'); // ตั้งค่า user_id
+  const userId = localStorage.getItem('userId'); // ดึง userId จาก localStorage
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,18 +41,26 @@ const Gemini = () => {
 
   return (
     <>
-      <h2 style={{ fontSize: '2rem' }}>GEMINI</h2>
-      <p style={{ fontSize: '1.25rem' }}>กรุณาใส่ข้อมูลที่คุณต้องการสรุปงานวิจัยของคุณด้านล่างนี้</p>
+      <h2 style={{ fontSize: '2rem', textAlign: 'center' }}>GEMINI</h2>
+      <p style={{ fontSize: '1.25rem', textAlign: 'center' }}>กรุณาใส่ข้อมูลที่คุณต้องการสรุปงานวิจัยของคุณด้านล่างนี้</p>
       <form onSubmit={handleSubmit}>
         <div className="input-group my-3 mx-auto" style={{ maxWidth: '600px' }}>
-          <TextField
-            label="ใส่รายละเอียดของงานวิจัยที่นี่..."
-            variant="outlined"
-            fullWidth
+          <textarea
+            className="form-control"
+            placeholder="ใส่รายละเอียดของงานวิจัยที่นี่..."
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
+            style={{
+              height: '150px', // ขยายความสูงของ textarea
+              resize: 'none',  // ปิดการปรับขนาดด้วยมือ
+              padding: '15px',
+              fontSize: '1.2rem',
+            }}
           />
-          <button className="btn btn-primary" type="submit">สรุป</button>
+        </div>
+        {/* ปุ่มอยู่ด้านล่างและกลาง */}
+        <div className="text-center">
+          <button className="btn btn-primary mt-3" type="submit">สรุป</button>
         </div>
       </form>
       {result && (
