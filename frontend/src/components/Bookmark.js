@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown'; 
 import './Bookmark.css';
 
 function BookmarkPage() {
   const [bookmarks, setBookmarks] = useState([]);
+  const [apiSummaries, setApiSummaries] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [viewType, setViewType] = useState('bookmark');
 
-  // ฟังก์ชันสำหรับดึงข้อมูล bookmark จาก API
   useEffect(() => {
-    const userId = localStorage.getItem('userId'); // ดึง userId จาก localStorage
+    const userId = localStorage.getItem('userId');
 
     if (userId) {
-      // ทำการเรียก API เพื่อดึงข้อมูล bookmarks
+      setLoading(true); 
+      // ดึงข้อมูล bookmark จาก API
       fetch(`http://localhost:5000/bookmarks/${userId}`)
         .then((response) => {
           if (!response.ok) {
@@ -19,12 +23,11 @@ function BookmarkPage() {
           return response.json();
         })
         .then(async (data) => {
-          console.log("Fetched bookmarks:", data); // เพิ่มการตรวจสอบข้อมูล
+          console.log("Fetched bookmarks:", data);
           const bookmarksWithResearch = await Promise.all(data.map(async (bookmark) => {
-            // ดึงข้อมูล research สำหรับแต่ละ bookmark
             const researchResponse = await fetch(`http://localhost:5000/research/${bookmark.research_id}`);
             const researchData = await researchResponse.json();
-            return { ...bookmark, research: researchData }; // เพิ่มข้อมูล research เข้าไปใน bookmark
+            return { ...bookmark, research: researchData };
           }));
           setBookmarks(bookmarksWithResearch);
         })
@@ -32,8 +35,22 @@ function BookmarkPage() {
           console.error('Error fetching bookmarks:', error);
           setErrorMessage('ไม่สามารถดึงข้อมูลบันทึกได้');
         });
+
+      // เรียก API เพื่อดึงข้อมูลสรุปจาก Gemini ที่บันทึกไว้ในฐานข้อมูล
+      fetch(`http://localhost:5000/summaries/${userId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setApiSummaries(data);
+        })
+        .catch((error) => {
+          console.error('Error fetching API summaries:', error);
+        })
+        .finally(() => {
+          setLoading(false); 
+        });
     } else {
       setErrorMessage('ไม่พบ user ID');
+      setLoading(false);
     }
   }, []);
 
@@ -41,27 +58,60 @@ function BookmarkPage() {
     <div className="bookmark-container">
       <h2 className="text-center">บันทึกของฉัน</h2>
       {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-      {bookmarks.length === 0 ? (
-        <p className="text-center">ยังไม่มีข้อมูลที่บันทึกไว้</p>
+      {loading && <p className="text-center">กำลังโหลดข้อมูล...</p>} 
+
+      <div className="view-toggle text-center">
+        <button 
+          className={`btn ${viewType === 'bookmark' ? 'btn-primary' : 'btn-outline-primary'}`} 
+          onClick={() => setViewType('bookmark')}
+        >
+          ดู Bookmark
+        </button>
+        <button 
+          className={`btn ${viewType === 'api' ? 'btn-primary' : 'btn-outline-primary'}`} 
+          onClick={() => setViewType('api')}
+        >
+          ดูผลลัพธ์จาก API
+        </button>
+      </div>
+
+      {viewType === 'bookmark' ? (
+        <ul className="bookmark-list">
+          {bookmarks.length === 0 ? (
+            <p className="text-center">ยังไม่มีข้อมูลที่บันทึกไว้</p>
+          ) : (
+            bookmarks.map((bookmark) => (
+              <li key={bookmark.id} className="bookmark-item">
+                <div className="bookmark-content">
+                  {bookmark.research && (
+                    <div>
+                      <h5>{bookmark.research.ชื่อเรื่อง}</h5>
+                      <p>รายละเอียด: {bookmark.research.คำอธิบาย}</p>
+                      {/* ปุ่มไปหน้างานวิจัย */}
+                      <a href={`/research/${bookmark.research_id}`} className="btn btn-link">
+                        ไปหน้างานวิจัย
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
       ) : (
         <ul className="bookmark-list">
-          {bookmarks.map((bookmark) => (
-            <li key={bookmark.id} className="bookmark-item">
-              <div className="bookmark-content">
-                <h4>{bookmark.title}</h4>
-                <p>{bookmark.description}</p>
-                {/* แสดงข้อมูลของ research ที่เกี่ยวข้อง */}
-                {bookmark.research && (
-                  <div>
-                    <h5>ข้อมูลการวิจัย:</h5>
-                    <p>ชื่อ: {bookmark.research.ชื่อเรื่อง}</p>
-                    <p>รายละเอียด: {bookmark.research.คำอธิบาย}</p>
-                  </div>
-                )}
-              </div>
-              {/* ลบปุ่มลบออก */}
-            </li>
-          ))}
+          {apiSummaries.length === 0 ? (
+            <p className="text-center">ยังไม่มีผลลัพธ์จาก API ที่บันทึกไว้</p>
+          ) : (
+            apiSummaries.map((summary) => (
+              <li key={summary.id} className="bookmark-item">
+                <div className="bookmark-content">
+                  <h4>ผลลัพธ์จากการสรุป</h4>
+                  <ReactMarkdown>{summary.summary}</ReactMarkdown>
+                </div>
+              </li>
+            ))
+          )}
         </ul>
       )}
     </div>

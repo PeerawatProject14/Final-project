@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import './ResearchData.css'; // ไฟล์ CSS หากต้องการใช้ร่วมกับ CSS
+import { useParams, useNavigate } from 'react-router-dom';
+import './ResearchData.css';
 
 const ResearchData = () => {
-  const location = useLocation();
+  const {research_id} = useParams();
   const navigate = useNavigate();
-  const { research } = location.state || {}; // ดึงข้อมูลจาก state
-
-  const [storedResearch, setStoredResearch] = useState(null); // เก็บข้อมูลที่ต้องการ
+  const [research, setResearch] = useState(null); // เก็บข้อมูลที่ต้องการ
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [storedResearch, setStoredResearch] = useState(null);
+  const [similarResearch, setSimilarResearch] = useState(null); // เก็บผลลัพธ์ที่ได้จาก Python script
 
   const handleBackClick = () => {
     navigate(-1); // กลับไปหน้าก่อนหน้า
@@ -16,13 +18,63 @@ const ResearchData = () => {
   // ฟังก์ชันสำหรับเก็บข้อมูลเมื่อผู้ใช้กดปุ่ม
   const handleSaveData = () => {
     if (research) {
-      setStoredResearch({
-        ชื่อเรื่อง: research.ชื่อเรื่อง,
-        คำอธิบาย: research.คำอธิบาย,
+      const researchData = {
+        qwe: research.qwe,
+        name: research.name,
+        abc: research.abc,
         PredictedLabel: research.PredictedLabel
-      });
+      };
+      setStoredResearch(researchData);
+
+      // ส่งข้อมูลไปยัง Express API เพื่อประมวลผลใน Python script
+      fetch('http://localhost:5000/api/process-research', {  // ใช้ /api/process-research
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(researchData),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // กำหนดค่า similarResearch ตามข้อมูลที่ได้จาก Python script
+          setSimilarResearch(data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
     }
   };
+  useEffect(() => {
+    const fetchResearchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/research/${research_id}`);
+        if (!response.ok) {
+          throw new Error('ไม่สามารถดึงข้อมูลได้');
+        }
+        const data = await response.json();
+        setResearch(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResearchData();
+  }, [research_id]);
+
+  if (loading) {
+    return <p>กำลังโหลดข้อมูล...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   if (!research) {
     return <p>ไม่พบข้อมูล</p>;
@@ -30,32 +82,29 @@ const ResearchData = () => {
 
   return (
     <main className="research-data-container">
-      
-      
-      
-
       <div className="research-detail-card">
         <button onClick={handleBackClick} className="btn btn-secondary mb-3">กลับ</button>
-        <h2 className="research-title">{research.ชื่อเรื่อง}</h2>
+        <h2 className="research-title">{research.name}</h2>
         <p><strong>เลขรหัสดีโอไอ:</strong> {research.เลขรหัสดีโอไอ}</p>
-        <p><strong>ชื่อนักวิจัย:</strong> {research.ชื่อนักวิจัย}</p>
+        <p><strong>qwe:</strong> {research.qwe}</p>
         <p><strong>ชื่อนักวิจัยร่วม:</strong> {research.ชื่อนักวิจัยร่วม}</p>
         <p><strong>หน่วยงาน:</strong> {research.หน่วยงาน}</p>
         <p><strong>ปีที่เผยแพร่:</strong> {research.ปีที่เผยแพร่}</p>
         <p><strong>อ้างอิง URL:</strong> <a href={research.URL} target="_blank" rel="noopener noreferrer">{research.URL}</a></p>
-        <p><strong>คำอธิบาย:</strong> {research.คำอธิบาย}</p>
+        <p><strong>abc:</strong> {research.abc}</p>
         <p><strong>คำสำคัญ:</strong> {research.คำสำคัญ}</p>
-      
+
         <div className="center-button">
-          <button onClick={handleSaveData} className="btn btn-primary mb-3">เก็บข้อมูล</button>
+          <button onClick={handleSaveData} className="btn btn-primary mb-3">ค้นหางานวิจัยที่คล้ายกัน</button>
         </div>
-        {/* แสดงข้อมูลที่เก็บไว้ใน state */}
-        {storedResearch && (
-          <div className="stored-research-info">
-            <h3>ข้อมูลที่ส่งให้ Python(เพื่อไปทำ cosine simฯ กับกลุ่มเดียวกับที่ส่งค่าไป)</h3>
-            <p><strong>ชื่อเรื่อง:</strong> {storedResearch.ชื่อเรื่อง}</p>
-            <p><strong>คำอธิบาย:</strong> {storedResearch.คำอธิบาย}</p>
-            <p><strong>PredictedLabel:</strong> {storedResearch.PredictedLabel}</p>
+        
+        {/* แสดงผลลัพธ์จาก Python */}
+        {similarResearch && (
+          <div className="similar-research-info">
+            <h3>ผลลัพธ์จากการค้นหางานวิจัยที่คล้ายกัน</h3>
+            <p><strong>qwe:</strong> {similarResearch.qwe}</p>
+            <p><strong>abc:</strong> {similarResearch.abc}</p>
+            <p><strong>Predicted Label:</strong> {similarResearch.PredictedLabel}</p>
           </div>
         )}
       </div>

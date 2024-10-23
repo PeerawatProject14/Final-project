@@ -37,7 +37,7 @@
   }
   
   .research-data-container {
-    background-image: url('C:/Users/admin/OneDrive/เอกสาร/GitHub/Final-project/frontend/src/images/test.jpg'); /* ใส่เส้นทางที่เหมาะสม */
+    background-image: url('C:/My Projects/Final project/frontend/src/images/test.jpg'); /* ใส่เส้นทางที่เหมาะสม */
     background-size: cover; /* ปรับขนาดภาพให้เต็มหน้าจอ */
     background-position: center; /* จัดภาพให้อยู่กลาง */
     height: 100vh; /* ความสูงเต็มหน้าจอ */

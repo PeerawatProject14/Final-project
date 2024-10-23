@@ -11,11 +11,16 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
       setFilteredData([]); // ถ้าคำค้นหาว่าง ไม่ต้องแสดงข้อมูลใดๆ
     } else {
       const filtered = researchData.filter((research) =>
-        research.ชื่อเรื่อง.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        research.ชื่อนักวิจัย.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        research.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        research.qwe.toLowerCase().includes(searchQuery.toLowerCase()) ||
         research.คำสำคัญ.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredData(filtered);
+    }
+  };
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch(); // ค้นหาข้อมูลเมื่อกด Enter
     }
   };
 
@@ -29,7 +34,8 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
           className="form-control"
           placeholder="ใสงานวิจัยของคุณที่นี่..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)} // อัปเดตค่าการค้นหา
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyPress={handleKeyPress} // ฟังก์ชันสำหรับการกดปุ่ม Enter
         />
         <button className="btn btn-primary" onClick={handleSearch}>ค้นหา</button>
       </div>
@@ -43,8 +49,8 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
               {filteredData.map((research) => (
                 <div key={research.id} style={{ width: '80%' }}>
                   <Link
-                    to="/research"
-                    state={{ research }} // ส่งข้อมูล research ไปยังหน้าถัดไป
+                    to={`/research/${research.id}`} // เปลี่ยนให้ไปที่ research ID แทน
+                    state={{ research }}// ส่งข้อมูล research ไปยังหน้าถัดไป
                     style={{
                       display: 'block',
                       minHeight: '100px',
@@ -58,12 +64,15 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
                       transition: 'max-height 0.3s ease',
                     }}
                   >
-                    <h4>{truncateText(research.ชื่อเรื่อง)}</h4>
-                    <p><strong>ชื่อนักวิจัย:</strong> {truncateText(research.ชื่อนักวิจัย)}</p>
+                    <h4>{truncateText(research.name)}</h4>
+                    <p><strong>qwe:</strong> {truncateText(research.qwe)}</p>
                     <p><strong>คำสำคัญ:</strong> {truncateText(research.คำสำคัญ)}</p>
                   </Link>
                   <button 
-                    onClick={() => handleBookmark(research.id)} 
+                    onClick={(e) => {
+                      e.stopPropagation(); // หยุดการทำงานเมื่อคลิกปุ่ม
+                      handleBookmark(research.id);
+                    }} 
                     className={`btn ${bookmarks.includes(research.id) ? 'btn-warning' : 'btn-outline-warning'} mt-2`}
                   >
                     {bookmarks.includes(research.id) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}

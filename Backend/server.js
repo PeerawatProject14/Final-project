@@ -3,66 +3,11 @@ const cors = require('cors');
 const mysql = require('mysql2/promise');
 const crypto = require('crypto');
 const bodyParser = require('body-parser');
+const { spawn } = require('child_process');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const port = 5000;
-
-// ใส่ API Key ของคุณตรงนี้
-const apiKey = "API KEY";
-const genAI = new GoogleGenerativeAI(apiKey);
-
-// กำหนด corsOptions
-app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-    optionsSuccessStatus: 200,
-  })); // เรียกใช้ CORS middleware ก่อน middleware อื่น ๆ
-app.use(express.json()); // เพิ่ม middleware เพื่อให้สามารถรับ JSON body ได้
-app.use(bodyParser.json());
-
-app.post('/api/generate', async (req, res) => {
-  const { input } = req.body;
-
-  // ตรวจสอบว่ามีการส่ง input มาหรือไม่
-  if (!input) {
-    return res.status(400).json({ error: 'Input is required' });
-  }
-
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro",systemInstruction: "สรุปบทความงานวิจัย" });
-    const result = await model.generateContent([input]);
-    
-    // ส่งผลลัพธ์เป็น JSON
-    res.json({ output: result.response.text() });
-  } catch (error) {
-    console.error("Error generating content:", error);
-    res.status(500).json({ error: 'Error generating content' });
-  }
-});
-
-// Endpoint สำหรับการบันทึกข้อมูลลงฐานข้อมูล
-app.post('/api/save', async (req, res) => {
-  const { output, user_id } = req.body;
-
-  if (!output || !user_id) {
-    return res.status(400).json({ error: 'Output and user_id are required' });
-  }
-
-  let connection;
-  try {
-    connection = await mysql.createConnection(dbConfig);
-    const sql = 'INSERT INTO gemini (summary, user_id) VALUES (?, ?)';
-    const [result] = await connection.execute(sql, [output, user_id]);
-    res.json({ message: 'บันทึกข้อมูลสำเร็จ', id: result.insertId });
-  } catch (err) {
-    console.error('Error saving data:', err);
-    res.status(500).json({ error: 'Error saving data' });
-  } finally {
-    if (connection) await connection.end();
-  }
-});
-
 
 const dbConfig = {
   host: 'localhost',
@@ -71,17 +16,57 @@ const dbConfig = {
   database: 'research_db',
 };
 
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  credentials: true,
-  optionsSuccessStatus: 200,
-};
-
+// กำหนดค่า CORS
 app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true,
     optionsSuccessStatus: 200,
-  }));
+}));
+app.use(express.json()); // เพื่อให้สามารถรับ JSON body ได้
+app.use(bodyParser.json());
+
+// Endpoint สำหรับการประมวลผลข้อมูลใน Python script
+app.post('/api/process-research', (req, res) => {
+  const storedResearch = req.body;
+
+  console.log("Received data from React:", storedResearch); // แสดงข้อมูลที่ได้รับจาก React
+
+  if (!storedResearch) {
+    return res.status(400).json({ error: 'Stored research data is required' });
+  }
+
+  // เรียก Python script
+  const pythonProcess = spawn('python', ['TestCosine.py']);
+
+  // ส่งข้อมูลไปยัง Python script
+  pythonProcess.stdin.write(JSON.stringify(storedResearch));
+  pythonProcess.stdin.end();
+
+  let dataToSend = '';
+  pythonProcess.stdout.on('data', (data) => {
+    dataToSend += data.toString();
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Python error: ${data}`);
+  });
+
+  pythonProcess.on('close', (code) => {
+    console.log(`Python process exited with code ${code}`);
+
+    if (dataToSend) {
+      try {
+        const jsonResponse = JSON.parse(dataToSend); // แปลงข้อมูลเป็น JSON
+        res.json(jsonResponse); // ส่งผลลัพธ์กลับไปยัง client
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+        res.status(500).json({ error: 'Error parsing JSON response' });
+      }
+    } else {
+      res.status(500).json({ error: 'No data received from Python script' });
+    }
+  });
+});
 
 // ฟังก์ชันสำหรับเข้ารหัสรหัสผ่านด้วย PBKDF2
 async function hashPassword(password, salt = null) {
@@ -108,10 +93,6 @@ async function verifyPassword(inputPassword, hashedPassword, salt) {
   const { hashedPassword: inputHashedPassword } = await hashPassword(inputPassword, salt);
   return inputHashedPassword === hashedPassword;
 }
-
-app.get('/status', (req, res) => {
-  res.json({ status: 'Server is running', uptime: process.uptime() });
-});
 
 // Endpoint สำหรับการลงทะเบียนผู้ใช้
 app.post('/register', async (req, res) => {
@@ -198,7 +179,48 @@ app.get('/research', async (req, res) => {
     }
   }
 });
+app.post('/api/generate', async (req, res) => {
+  const { input } = req.body;
 
+  // ตรวจสอบว่ามีการส่ง input มาหรือไม่
+  if (!input) {
+    return res.status(400).json({ error: 'Input is required' });
+  }
+
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro",systemInstruction: "สรุปบทความงานวิจัย" });
+    const result = await model.generateContent([input]);
+    
+    // ส่งผลลัพธ์เป็น JSON
+    res.json({ output: result.response.text() });
+  } catch (error) {
+    console.error("Error generating content:", error);
+    res.status(500).json({ error: 'Error generating content' });
+  }
+});
+
+// Endpoint สำหรับการบันทึกข้อมูลลงฐานข้อมูล
+app.post('/api/save', async (req, res) => {
+  const { output, user_id } = req.body;
+  
+
+  if (!output || !user_id) {
+    return res.status(400).json({ error: 'Output and user_id are required' });
+  }
+
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
+    const sql = 'INSERT INTO gemini (summary, user_id) VALUES (?, ?)';
+    const [result] = await connection.execute(sql, [output, user_id]);
+    res.json({ message: 'บันทึกข้อมูลสำเร็จ', id: result.insertId });
+  } catch (err) {
+    console.error('Error saving data:', err);
+    res.status(500).json({ error: 'Error saving data' });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
 // Endpoint สำหรับเพิ่ม bookmark
 app.post('/bookmarks', async (req, res) => {
   const { research_id } = req.body;
@@ -270,7 +292,34 @@ app.get('/research/:research_id', async (req, res) => {
   }
 });
 
+// ดึงผลลัพธ์ที่บันทึกจาก Gemini API ตาม user_id
+app.get('/summaries/:userId', async (req, res) => {
+  const userId = req.params.userId;
 
+  try {
+    // เชื่อมต่อกับฐานข้อมูล
+    const connection = await mysql.createConnection(dbConfig);
+
+    const [results] = await connection.execute(
+      'SELECT * FROM gemini WHERE user_id = ?',
+      [userId]
+    );
+
+    // ส่งผลลัพธ์กลับไปยัง client
+    res.json(results);
+
+    // ปิดการเชื่อมต่อฐานข้อมูล
+    await connection.end();
+  } catch (err) {
+    console.error('Error querying database:', err); // Log ข้อผิดพลาดที่เกิดขึ้น
+    res.status(500).json({ error: 'Error fetching summaries from database' });
+  }
+});
+
+
+app.get('/status', (req, res) => {
+  res.json({ status: 'Server is running', uptime: process.uptime() });
+});
 
 // เริ่มต้นเซิร์ฟเวอร์
 app.listen(port, () => {
