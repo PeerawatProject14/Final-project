@@ -19,9 +19,9 @@ const ResearchData = () => {
   const handleSaveData = () => {
     if (research) {
       const researchData = {
-        qwe: research.qwe,
         name: research.name,
-        abc: research.abc,
+        name: research.name,
+        description: research.description,
         PredictedLabel: research.PredictedLabel
       };
       setStoredResearch(researchData);
@@ -85,14 +85,14 @@ const ResearchData = () => {
       <div className="research-detail-card">
         <button onClick={handleBackClick} className="btn btn-secondary mb-3">กลับ</button>
         <h2 className="research-title">{research.name}</h2>
-        <p><strong>เลขรหัสดีโอไอ:</strong> {research.เลขรหัสดีโอไอ}</p>
-        <p><strong>qwe:</strong> {research.qwe}</p>
-        <p><strong>ชื่อนักวิจัยร่วม:</strong> {research.ชื่อนักวิจัยร่วม}</p>
-        <p><strong>หน่วยงาน:</strong> {research.หน่วยงาน}</p>
-        <p><strong>ปีที่เผยแพร่:</strong> {research.ปีที่เผยแพร่}</p>
-        <p><strong>อ้างอิง URL:</strong> <a href={research.URL} target="_blank" rel="noopener noreferrer">{research.URL}</a></p>
-        <p><strong>abc:</strong> {research.abc}</p>
-        <p><strong>คำสำคัญ:</strong> {research.คำสำคัญ}</p>
+        <p><strong>doi:</strong> {research.doi}</p>
+        <p><strong>name:</strong> {research.name}</p>
+        <p><strong>co_researcher:</strong> {research.co_researcher}</p>
+        <p><strong>institution:</strong> {research.institution}</p>
+        <p><strong>year:</strong> {research.year}</p>
+        <p><strong>อ้างอิง URL:</strong> <a href={research.url} target="_blank" rel="noopener noreferrer">{research.url}</a></p>
+        <p><strong>description:</strong> {research.description}</p>
+        <p><strong>keyword:</strong> {research.keyword}</p>
 
         <div className="center-button">
           <button onClick={handleSaveData} className="btn btn-primary mb-3">ค้นหางานวิจัยที่คล้ายกัน</button>
@@ -102,8 +102,8 @@ const ResearchData = () => {
         {similarResearch && (
           <div className="similar-research-info">
             <h3>ผลลัพธ์จากการค้นหางานวิจัยที่คล้ายกัน</h3>
-            <p><strong>qwe:</strong> {similarResearch.qwe}</p>
-            <p><strong>abc:</strong> {similarResearch.abc}</p>
+            <p><strong>name:</strong> {similarResearch.name}</p>
+            <p><strong>description:</strong> {similarResearch.description}</p>
             <p><strong>Predicted Label:</strong> {similarResearch.PredictedLabel}</p>
           </div>
         )}

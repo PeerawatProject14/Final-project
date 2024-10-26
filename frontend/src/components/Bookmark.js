@@ -85,8 +85,8 @@ function BookmarkPage() {
                 <div className="bookmark-content">
                   {bookmark.research && (
                     <div>
-                      <h5>{bookmark.research.ชื่อเรื่อง}</h5>
-                      <p>รายละเอียด: {bookmark.research.คำอธิบาย}</p>
+                      <h5>{bookmark.research.name}</h5>
+                      <p>รายละเอียด: {bookmark.research.description}</p>
                       {/* ปุ่มไปหน้างานวิจัย */}
                       <a href={`/research/${bookmark.research_id}`} className="btn btn-link">
                         ไปหน้างานวิจัย

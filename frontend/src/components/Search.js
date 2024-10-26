@@ -12,8 +12,8 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
     } else {
       const filtered = researchData.filter((research) =>
         research.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        research.qwe.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        research.คำสำคัญ.toLowerCase().includes(searchQuery.toLowerCase())
+        research.researcher.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        research.keyword.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredData(filtered);
     }
@@ -65,8 +65,8 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
                     }}
                   >
                     <h4>{truncateText(research.name)}</h4>
-                    <p><strong>qwe:</strong> {truncateText(research.qwe)}</p>
-                    <p><strong>คำสำคัญ:</strong> {truncateText(research.คำสำคัญ)}</p>
+                    <p><strong>researcher:</strong> {truncateText(research.researcher)}</p>
+                    <p><strong>keyword:</strong> {truncateText(research.keyword)}</p>
                   </Link>
                   <button 
                     onClick={(e) => {
