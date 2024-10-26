@@ -8,6 +8,8 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const port = 5000;
+const apiKey = "API KEY";
+const genAI = new GoogleGenerativeAI(apiKey);
 
 const dbConfig = {
   host: 'localhost',
@@ -225,6 +227,34 @@ app.post('/api/save', async (req, res) => {
     if (connection) await connection.end();
   }
 });
+
+// Endpoint สำหรับการเปรียบเทียบงานวิจัย
+app.post('/api/compare', async (req, res) => {
+  const { description1, description2 } = req.body;
+
+  // ตรวจสอบว่าได้รับ description ทั้งสองรายการหรือไม่
+  if (!description1 || !description2) {
+    return res.status(400).json({ error: 'Descriptions for both research items are required' });
+  }
+
+  try {
+    // ตั้งค่าการใช้ระบบสำหรับการเปรียบเทียบ
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-pro",
+      systemInstruction: "เปรียบเทียบงานวิจัย และการนำมาประยุกต์ใช้ร่วมกัน"
+    });
+
+    // ส่งคำอธิบายสองรายการเพื่อให้โมเดลทำการเปรียบเทียบ
+    const result = await model.generateContent([description1, description2]);
+
+    // ส่งผลลัพธ์การเปรียบเทียบกลับเป็น JSON
+    res.json({ output: result.response.text() });
+  } catch (error) {
+    console.error("Error comparing research:", error);
+    res.status(500).json({ error: 'Error comparing research' });
+  }
+});
+
 // Endpoint สำหรับเพิ่ม bookmark
 app.post('/bookmarks', async (req, res) => {
   const { research_id } = req.body;

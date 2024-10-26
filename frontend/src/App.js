@@ -1,11 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // เปลี่ยน Switch เป็น Routes
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
-import HomePage from './components/HomePage'; // import หน้า Homepage
+import HomePage from './components/HomePage'; 
 import ResearchData from './components/ResearchData';
 import BookmarkPage from './components/Bookmark';
 import ResearchDetail from './components/ResearchData';
+import CompareResults from './components/CompareResults';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/research" element={<ResearchData />} />
         <Route path="/bookmark" element={<BookmarkPage />} />
         <Route path="/research/:research_id" element={<ResearchDetail />} />
+        <Route path="/compare" element={<CompareResults />} />
       </Routes>
     </Router>
   );

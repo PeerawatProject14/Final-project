@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
-  const [searchQuery, setSearchQuery] = useState(''); // เก็บค่าการค้นหา
-  const [filteredData, setFilteredData] = useState([]); // เริ่มต้นเป็น array ว่าง
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const navigate = useNavigate();
 
-  // ฟังก์ชันค้นหาข้อมูล
   const handleSearch = () => {
     if (searchQuery.trim() === '') {
-      setFilteredData([]); // ถ้าคำค้นหาว่าง ไม่ต้องแสดงข้อมูลใดๆ
+      setFilteredData([]);
     } else {
       const filtered = researchData.filter((research) =>
         research.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -18,10 +19,34 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
       setFilteredData(filtered);
     }
   };
+
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
-      handleSearch(); // ค้นหาข้อมูลเมื่อกด Enter
+      handleSearch();
     }
+  };
+
+  const handleSelect = (research) => {
+    if (selectedItems.includes(research)) {
+      setSelectedItems(selectedItems.filter(item => item !== research));
+    } else if (selectedItems.length < 2) {
+      setSelectedItems([...selectedItems, research]);
+    }
+  };
+
+  const handleCompare = async () => {
+    if (selectedItems.length !== 2) {
+      alert('กรุณาเลือกงานวิจัย 2 ชิ้นเพื่อทำการเปรียบเทียบ');
+      return;
+    }
+
+    // Navigating to a new page with the selected research descriptions
+    navigate('/compare', {
+      state: {
+        description1: selectedItems[0].description,
+        description2: selectedItems[1].description,
+      },
+    });
   };
 
   return (
@@ -32,62 +57,75 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
         <input
           type="text"
           className="form-control"
-          placeholder="ใสงานวิจัยของคุณที่นี่..."
+          placeholder="ใส่คำค้นหาของคุณที่นี่..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyPress={handleKeyPress} // ฟังก์ชันสำหรับการกดปุ่ม Enter
+          onKeyPress={handleKeyPress}
         />
         <button className="btn btn-primary" onClick={handleSearch}>ค้นหา</button>
       </div>
-      
-      {/* แสดงผลเฉพาะเมื่อมีการค้นหา */}
-      {filteredData.length > 0 && (
-        <>
-          <h3>ข้อมูลการวิจัย</h3>
-          <div style={{ maxHeight: '550px', overflowY: 'auto' }} className="mb-7">
-            <div className="d-flex flex-column justify-content-center align-items-center gap-3">
-              {filteredData.map((research) => (
-                <div key={research.id} style={{ width: '80%' }}>
-                  <Link
-                    to={`/research/${research.id}`} // เปลี่ยนให้ไปที่ research ID แทน
-                    state={{ research }}// ส่งข้อมูล research ไปยังหน้าถัดไป
-                    style={{
-                      display: 'block',
-                      minHeight: '100px',
-                      maxHeight: '300px',
-                      overflow: 'hidden',
-                      border: '1px solid #ccc',
-                      borderRadius: '10px',
-                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                      padding: '40px',
-                      backgroundColor: '#fff',
-                      transition: 'max-height 0.3s ease',
-                    }}
-                  >
-                    <h4>{truncateText(research.name)}</h4>
-                    <p><strong>researcher:</strong> {truncateText(research.researcher)}</p>
-                    <p><strong>keyword:</strong> {truncateText(research.keyword)}</p>
-                  </Link>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation(); // หยุดการทำงานเมื่อคลิกปุ่ม
-                      handleBookmark(research.id);
-                    }} 
-                    className={`btn ${bookmarks.includes(research.id) ? 'btn-warning' : 'btn-outline-warning'} mt-2`}
-                  >
-                    {bookmarks.includes(research.id) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
 
-      {/* แสดงข้อความเมื่อไม่พบข้อมูลที่ตรงกับการค้นหา */}
-      {filteredData.length === 0 && searchQuery !== '' && (
-        <p>ไม่พบข้อมูลที่ตรงกับการค้นหา</p>
-      )}
+      <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+        <div style={{ width: '60%' }}>
+          {filteredData.length > 0 ? (
+            <>
+              <h3>ข้อมูลการวิจัย</h3>
+              <div style={{ maxHeight: '550px', overflowY: 'auto' }} className="mb-3">
+                {filteredData.map((research) => (
+                  <div key={research.id} style={{ width: '100%', marginBottom: '20px' }}>
+                    <Link
+                      to={`/research/${research.id}`}
+                      state={{ research }}
+                      style={{
+                        display: 'block',
+                        minHeight: '100px',
+                        maxHeight: '300px',
+                        overflow: 'hidden',
+                        border: '1px solid #ccc',
+                        borderRadius: '10px',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                        padding: '20px',
+                        backgroundColor: '#fff',
+                        transition: 'max-height 0.3s ease',
+                      }}
+                    >
+                      <h4>{truncateText(research.name)}</h4>
+                      <p><strong>researcher:</strong> {truncateText(research.researcher)}</p>
+                      <p><strong>keyword:</strong> {truncateText(research.keyword)}</p>
+                    </Link>
+                    <div className="d-flex justify-content-between align-items-center mt-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleBookmark(research.id);
+                        }}
+                        className={`btn ${bookmarks.includes(research.id) ? 'btn-warning' : 'btn-outline-warning'}`}
+                      >
+                        {bookmarks.includes(research.id) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}
+                      </button>
+                      <button
+                        onClick={() => handleSelect(research)}
+                        className={`btn ${selectedItems.includes(research) ? 'btn-success' : 'btn-outline-success'}`}
+                      >
+                        {selectedItems.includes(research) ? 'ยกเลิกเลือก' : 'เลือกเปรียบเทียบ'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                className="btn btn-primary mt-3"
+                onClick={handleCompare}
+                disabled={selectedItems.length !== 2}
+              >
+                เปรียบเทียบงานวิจัย
+              </button>
+            </>
+          ) : (
+            <p>ไม่พบข้อมูลที่ตรงกับการค้นหา</p>
+          )}
+        </div>
+      </div>
     </>
   );
 };
