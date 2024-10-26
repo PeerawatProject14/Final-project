@@ -26,16 +26,16 @@ app.use(express.json()); // เพื่อให้สามารถรับ 
 app.use(bodyParser.json());
 
 // Endpoint สำหรับการประมวลผลข้อมูลใน Python script
-app.post('/api/process-research', (req, res) => {
+app.post('/api/process-research', async (req, res) => {
   const storedResearch = req.body;
 
-  console.log("Received data from React:", storedResearch); // แสดงข้อมูลที่ได้รับจาก React
+  console.log("Received data from React:", storedResearch);
 
   if (!storedResearch) {
     return res.status(400).json({ error: 'Stored research data is required' });
   }
 
-  // เรียก Python script
+  // เรียกใช้ Python script
   const pythonProcess = spawn('python', ['TestCosine.py']);
 
   // ส่งข้อมูลไปยัง Python script
@@ -56,8 +56,12 @@ app.post('/api/process-research', (req, res) => {
 
     if (dataToSend) {
       try {
-        const jsonResponse = JSON.parse(dataToSend); // แปลงข้อมูลเป็น JSON
-        res.json(jsonResponse); // ส่งผลลัพธ์กลับไปยัง client
+        const jsonResponse = JSON.parse(dataToSend);
+        
+        // แสดงข้อมูลที่ได้รับจาก Python ใน terminal
+        console.log("Data received from Python:", jsonResponse);
+        
+        res.json(jsonResponse); // ส่งข้อมูลกลับไปยัง React
       } catch (error) {
         console.error('Error parsing JSON:', error);
         res.status(500).json({ error: 'Error parsing JSON response' });

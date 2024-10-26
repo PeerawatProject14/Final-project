@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import './ResearchData.css';
 
 const ResearchData = () => {
-  const {research_id} = useParams();
+  const { research_id } = useParams();
   const navigate = useNavigate();
   const [research, setResearch] = useState(null); // เก็บข้อมูลที่ต้องการ
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,7 @@ const ResearchData = () => {
   const handleSaveData = () => {
     if (research) {
       const researchData = {
-        name: research.name,
+        id: research.id,
         name: research.name,
         description: research.description,
         PredictedLabel: research.PredictedLabel
@@ -27,7 +27,7 @@ const ResearchData = () => {
       setStoredResearch(researchData);
 
       // ส่งข้อมูลไปยัง Express API เพื่อประมวลผลใน Python script
-      fetch('http://localhost:5000/api/process-research', {  // ใช้ /api/process-research
+      fetch('http://localhost:5000/api/process-research', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,6 +49,7 @@ const ResearchData = () => {
         });
     }
   };
+
   useEffect(() => {
     const fetchResearchData = async () => {
       try {
@@ -85,6 +86,7 @@ const ResearchData = () => {
       <div className="research-detail-card">
         <button onClick={handleBackClick} className="btn btn-secondary mb-3">กลับ</button>
         <h2 className="research-title">{research.name}</h2>
+        <p><strong>id:</strong> {research.id}</p>
         <p><strong>doi:</strong> {research.doi}</p>
         <p><strong>name:</strong> {research.name}</p>
         <p><strong>co_researcher:</strong> {research.co_researcher}</p>
@@ -97,14 +99,19 @@ const ResearchData = () => {
         <div className="center-button">
           <button onClick={handleSaveData} className="btn btn-primary mb-3">ค้นหางานวิจัยที่คล้ายกัน</button>
         </div>
-        
-        {/* แสดงผลลัพธ์จาก Python */}
-        {similarResearch && (
-          <div className="similar-research-info">
-            <h3>ผลลัพธ์จากการค้นหางานวิจัยที่คล้ายกัน</h3>
-            <p><strong>name:</strong> {similarResearch.name}</p>
-            <p><strong>description:</strong> {similarResearch.description}</p>
-            <p><strong>Predicted Label:</strong> {similarResearch.PredictedLabel}</p>
+
+        {/* แสดงการ์ดวิจัยที่คล้ายกัน */}
+        {similarResearch && similarResearch.matching_research && (
+          <div className="similar-research-container">
+            {similarResearch.matching_research.map((item) => (
+              <div className="research-card" key={item.id}>
+                <h4>{item.name}</h4>
+                <p><strong>id:</strong> {item.id}</p>
+                <p><strong>description:</strong> {item.description}</p>
+                <p><strong>PredictedLabel:</strong> {item.PredictedLabel}</p>
+                {/* คุณสามารถเพิ่มข้อมูลอื่น ๆ ที่ต้องการแสดงที่นี่ */}
+              </div>
+            ))}
           </div>
         )}
       </div>

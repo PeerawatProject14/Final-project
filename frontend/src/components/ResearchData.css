@@ -1,70 +1,93 @@
+.research-data-container {
+  background-image: url('C:/My Projects/Final project/frontend/src/images/test.jpg'); /* ใส่เส้นทางที่เหมาะสม */
+  background-size: cover; /* ปรับขนาดภาพให้เต็มหน้าจอ */
+  background-position: center; /* จัดภาพให้อยู่กลาง */
+  height: 100vh; /* ความสูงเต็มหน้าจอ */
+  display: flex; /* ใช้ Flexbox เพื่อจัดตำแหน่ง */
+  justify-content: center; /* จัดกลางในแนวนอน */
+  align-items: center; /* จัดกลางในแนวตั้ง */
+  flex-direction: column; /* ใช้เพื่อจัดให้องค์ประกอบอยู่ในแนวตั้ง */
+}
 
-  
-  .research-detail-card p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-  }
-  
-  .research-detail-card strong {
-    font-weight: bold;
-  }
-  
-  a {
-    color: #007bff;
-    text-decoration: none;
-  }
-  
-  a:hover {
-    text-decoration: underline;
-  }
-  
-  .btn {
-    font-size: 1rem;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .btn-secondary {
-    background-color: #6c757d;
-  }
-  
-  .btn:hover {
-    background-color: #0056b3;
-  }
-  
-  .research-data-container {
-    background-image: url('C:/My Projects/Final project/frontend/src/images/test.jpg'); /* ใส่เส้นทางที่เหมาะสม */
-    background-size: cover; /* ปรับขนาดภาพให้เต็มหน้าจอ */
-    background-position: center; /* จัดภาพให้อยู่กลาง */
-    height: 100vh; /* ความสูงเต็มหน้าจอ */
-    display: flex; /* ใช้ Flexbox เพื่อจัดตำแหน่ง */
-    justify-content: center; /* จัดกลางในแนวนอน */
-    align-items: center; /* จัดกลางในแนวตั้ง */
-    flex-direction: column; /* ใช้เพื่อจัดให้องค์ประกอบอยู่ในแนวตั้ง */
-  }
-  
-  .research-detail-card {
-    background-color: rgba(255, 255, 255, 1); /* แสดงพื้นหลังเป็นสีขาวโปร่งแสง */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 80%; /* ให้ขนาดการ์ดไม่เต็มจอ */
-    max-width: 900px; /* กำหนดขนาดสูงสุด */
-    max-height: 900px;
-    overflow-y: auto;
-  }
-  
-  .research-title {
-    font-size: 2rem;
-    margin-bottom: 10px;
-  }
-  
-  .center-button {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem; /* กำหนดระยะห่างจากองค์ประกอบอื่น ๆ */
-  }
+.research-detail-card {
+  background-color: rgba(255, 255, 255, 1); /* แสดงพื้นหลังเป็นสีขาวโปร่งแสง */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 80%; /* ให้ขนาดการ์ดไม่เต็มจอ */
+  max-width: 900px; /* กำหนดขนาดสูงสุด */
+  max-height: 900px;
+  overflow-y: auto; /* ให้สามารถเลื่อนดูข้อมูลที่ยาวเกินได้ */
+}
+
+.research-detail-card p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.research-detail-card strong {
+  font-weight: bold;
+}
+
+.research-title {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.center-button {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem; /* กำหนดระยะห่างจากองค์ประกอบอื่น ๆ */
+}
+
+.similar-research-container {
+  margin-top: 20px;
+}
+
+.similar-research-cards {
+  display: flex;
+  flex-wrap: wrap; /* ให้การ์ดอยู่ในหลายบรรทัด */
+  gap: 20px; /* เว้นระยะระหว่างการ์ด */
+  overflow: hidden; /* ป้องกัน overflow */
+}
+
+.research-card {
+  flex: 1 1 calc(30% - 20px); /* ความกว้างของการ์ด */
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  padding: 15px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* ป้องกัน overflow ของเนื้อหา */
+}
+
+.research-card h4 {
+  margin-top: 0;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.btn {
+  font-size: 1rem;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
