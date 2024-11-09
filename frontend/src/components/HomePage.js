@@ -127,13 +127,13 @@ function HomePage() {
         <nav>
           <ul className="nav">
             <li className="nav-item">
-              <button onClick={handleGeminiClick} className="btn btn-link">
-                GEMINI
+              <button onClick={handleBookmarkClick} className="btn btn-link">
+                BOOKMARK
               </button>
             </li>
             <li className="nav-item">
-              <button onClick={handleBookmarkClick} className="btn btn-link">
-                BOOKMARK
+              <button onClick={handleGeminiClick} className="btn btn-link">
+                GEMINI
               </button>
             </li>
             <li className="nav-item">

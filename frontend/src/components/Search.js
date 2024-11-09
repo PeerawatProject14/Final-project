@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import './Search.css';  // นำเข้าไฟล์ CSS
 
 const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,7 +41,6 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
       return;
     }
 
-    // Navigating to a new page with the selected research descriptions
     navigate('/compare', {
       state: {
         description1: selectedItems[0].description,
@@ -50,62 +50,51 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
   };
 
   return (
-    <>
-      <h2 style={{ fontSize: '2rem', textAlign: 'center' }}>ค้นหางานวิจัย</h2>
-      <p style={{ fontSize: '1.25rem', textAlign: 'center' }}>ใส่ชื่อ หรือ คำอธิบาย ของงานวิจัยที่คุณสนใจ</p>
-      <div className="input-group my-3 mx-auto" style={{ maxWidth: '600px' }}>
+    <div className="search-container">
+      <h2 className="search-title">ค้นหางานวิจัย</h2>
+      <p className="search-subtitle">ใส่ชื่อ หรือ คำอธิบาย ของงานวิจัยที่คุณสนใจ</p>
+      <div className="input-group search-input-group">
         <input
           type="text"
-          className="form-control"
+          className="form-control search-input"
           placeholder="ใส่คำค้นหาของคุณที่นี่..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyPress={handleKeyPress}
         />
-        <button className="btn btn-primary" onClick={handleSearch}>ค้นหา</button>
+        <button className="btn btn-primary search-button" onClick={handleSearch}>ค้นหา</button>
       </div>
 
-      <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
-        <div style={{ width: '60%' }}>
+      <div className="research-list">
+        <div className="research-container">
           {filteredData.length > 0 ? (
             <>
               <h3>ข้อมูลการวิจัย</h3>
-              <div style={{ maxHeight: '550px', overflowY: 'auto' }} className="mb-3">
+              <div className="research-items-container">
                 {filteredData.map((research) => (
-                  <div key={research.id} style={{ width: '100%', marginBottom: '20px' }}>
+                  <div key={research.id} className="research-item">
                     <Link
                       to={`/research/${research.id}`}
                       state={{ research }}
-                      style={{
-                        display: 'block',
-                        minHeight: '100px',
-                        maxHeight: '300px',
-                        overflow: 'hidden',
-                        border: '1px solid #ccc',
-                        borderRadius: '10px',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                        padding: '20px',
-                        backgroundColor: '#fff',
-                        transition: 'max-height 0.3s ease',
-                      }}
+                      className="research-link"
                     >
-                      <h4>{truncateText(research.name)}</h4>
+                      <h4 className="research-title">{truncateText(research.name)}</h4>
                       <p><strong>researcher:</strong> {truncateText(research.researcher)}</p>
                       <p><strong>keyword:</strong> {truncateText(research.keyword)}</p>
                     </Link>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
+                    <div className="research-buttons">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleBookmark(research.id);
                         }}
-                        className={`btn ${bookmarks.includes(research.id) ? 'btn-warning' : 'btn-outline-warning'}`}
+                        className={`btn ${bookmarks.includes(research.id) ? 'bookmark-selected' : 'outline-bookmark'}`}
                       >
                         {bookmarks.includes(research.id) ? 'ยกเลิกบุ๊คมาร์ค' : 'บุ๊คมาร์ค'}
                       </button>
                       <button
                         onClick={() => handleSelect(research)}
-                        className={`btn ${selectedItems.includes(research) ? 'btn-success' : 'btn-outline-success'}`}
+                        className={`btn ${selectedItems.includes(research) ? 'selected' : 'outline-selected'}`}
                       >
                         {selectedItems.includes(research) ? 'ยกเลิกเลือก' : 'เลือกเปรียบเทียบ'}
                       </button>
@@ -114,7 +103,7 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
                 ))}
               </div>
               <button
-                className="btn btn-primary mt-3"
+                className="btn btn-primary compare-button"
                 onClick={handleCompare}
                 disabled={selectedItems.length !== 2}
               >
@@ -122,11 +111,11 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
               </button>
             </>
           ) : (
-            <p>ไม่พบข้อมูลที่ตรงกับการค้นหา</p>
+            <p className="no-results">ไม่พบข้อมูลที่ตรงกับการค้นหา</p>
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

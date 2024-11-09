@@ -1,0 +1,67 @@
+/* ภาพพื้นหลัง */
+.background-container {
+    background-image: url('../images/test.jpg');
+    background-size: cover;
+    background-position: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+/* กล่องข้อมูล */
+.container {
+    padding: 20px;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.8); /* สีพื้นหลังขาวโปร่งใส */
+    backdrop-filter: blur(10px); /* เอฟเฟกต์เบลอ */
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    color: #333; /* สีข้อความ */
+    text-align: left; /* ทุกตัวอักษรชิดซ้าย */
+}
+
+/* ยกเว้น header */
+.heading {
+    text-align: center; /* ตัวอักษรใน header ชิดกลาง */
+    font-size: 1.8em;
+    margin-bottom: 20px;
+}
+
+.loading {
+    font-size: 1.2em;
+    color: #9e9e9e;
+}
+
+.result-container {
+    text-align: left; /* ทำให้ข้อความทั้งหมดใน container ชิดซ้าย */
+    max-width: 800px;
+    margin: 0 auto; /* เพื่อจัดคอนเทนเนอร์ให้อยู่กลาง */
+}
+
+.result {
+    text-align: left; /* สำหรับ ReactMarkdown ทำให้ชิดซ้าย */
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+
+.backButton {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.backButton:hover {
+    background-color: #0056b3;
+}
+

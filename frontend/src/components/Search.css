@@ -1,0 +1,174 @@
+/* Search.css */
+
+.search-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px;
+    background-color: #f4f4f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .search-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .search-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+  }
+  
+  .input-group {
+    margin-bottom: 10px;
+    margin-top: 0px;
+  }
+  
+  .search-input {
+    flex-grow: 1;
+    padding: 0.8rem 1.2rem;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  
+  .search-input:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  .search-button {
+    padding: 0.8rem 1.5rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .search-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .research-list {
+    margin-top: 2rem;
+    overflow-y: auto; /* ทำให้เลื่อนรายการวิจัยได้ */
+    max-height: 60vh; /* กำหนดความสูงของรายการวิจัย */
+  }
+  
+  .research-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .research-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .research-item {
+    padding: 1.2rem;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .research-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .research-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+  
+  .research-link {
+    text-decoration: none;
+  }
+  
+  .research-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 1rem;
+  }
+  
+  .research-buttons button {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .bookmark-selected {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .outline-bookmark {
+    background-color: transparent;
+    color: #28a745;
+  }
+  
+  .selected {
+    background-color: #ffc107;
+    color: white;
+  }
+  
+  .outline-selected {
+    background-color: transparent;
+    color: #ffc107;
+  }
+  
+  /* ปุ่มเปรียบเทียบให้อยู่นอกกรอบเลื่อน */
+  .compare-button {
+    padding: 1rem 2rem;
+    background-color: #007bff;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: sticky;
+    bottom: 2rem; /* ทำให้ปุ่มอยู่ด้านล่างของกรอบ */
+    z-index: 10; /* ให้ปุ่มอยู่เหนือส่วนอื่น */
+    width: 100%;
+    max-width: 250px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .compare-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .compare-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .no-results {
+    font-size: 1.1rem;
+    color: #888;
+    text-align: center;
+    margin-top: 2rem;
+  }
+  

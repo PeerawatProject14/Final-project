@@ -1,43 +1,108 @@
-.bookmark-container {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .bookmark-list {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .bookmark-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f9f9f9;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-  }
-  
-  .bookmark-content h4 {
-    margin: 0;
-    font-size: 18px;
-  }
-  
-  .bookmark-content p {
-    margin: 5px 0;
-    font-size: 14px;
-  }
-  
-  .btn-danger {
-    background-color: #dc3545;
-    border: none;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-  }
-  
-  .btn-danger:hover {
-    background-color: #c82333;
-  }
-  
+/* พื้นหลัง */
+.bookmark-page {
+  background-color: #121212;  /* เปลี่ยนให้เข้มขึ้นเล็กน้อย */
+  position: relative;
+  height: 100vh;
+  color: white;
+  padding: 30px;
+  overflow-y: auto;
+  font-family: 'Arial', sans-serif;  /* เพิ่มฟอนต์ที่ดูทันสมัย */
+}
+
+/* ปุ่มกลับ */
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #4e4e4e;
+  border: none;
+  color: white;
+  padding: 12px 25px;  /* เพิ่มขนาดปุ่มให้เหมาะสม */
+  border-radius: 8px;
+  font-weight: bold;  /* ทำให้ตัวอักษรหนาขึ้น */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);  /* เพิ่มเงาให้ปุ่ม */
+  transition: background-color 0.3s ease, transform 0.2s ease;  /* เพิ่มเอฟเฟกต์การเคลื่อนไหว */
+}
+
+.back-btn:hover {
+  background-color: #6c757d;
+  transform: translateY(-2px);  /* ยกปุ่มเล็กน้อยเมื่อ hover */
+}
+
+/* เนื้อหาภายใน */
+.bookmark-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 12px 18px;  /* ปรับให้ padding ใหญ่ขึ้นเล็กน้อย */
+  margin-bottom: 12px;  /* เพิ่มระยะห่างระหว่างรายการ */
+  border-radius: 10px;  /* เพิ่มมุมโค้งให้ดูนุ่มนวลขึ้น */
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.bookmark-item:hover {
+  background-color: #444;  /* เพิ่มสีเมื่อ hover */
+}
+
+.bookmark-list {
+  width: 100%;
+  max-width: 1600px;  /* เพิ่มขนาดความกว้างสูงสุดให้เหมาะสม */
+  margin: 0 auto;
+}
+
+/* สไตล์สำหรับหัวข้อ */
+.bookmark-content h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;  /* เพิ่มความหนาของตัวอักษร */
+  color: #f1f1f1;  /* เปลี่ยนสีให้เหมาะกับธีมมืด */
+}
+
+.bookmark-content p {
+  margin: 8px 0;
+  font-size: 15px;
+  color: #ccc;  /* เปลี่ยนสีข้อความให้อ่านง่ายขึ้น */
+}
+
+/* การจัดการปุ่ม */
+.view-toggle {
+  margin-bottom: 25px;
+}
+
+.view-toggle button {
+  margin: 0 10px;
+  padding: 8px 16px;  /* เพิ่มขนาดปุ่ม */
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.view-toggle button:hover {
+  background-color: #5a6268;  /* สีปุ่มเมื่อ hover */
+  color: white;
+}
+
+/* สไตล์ปุ่มหลัก */
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.btn-outline-primary {
+  border: 2px solid #007bff;
+  color: #007bff;
+  border-radius: 5px;
+  padding: 10px 20px;
+}
+
+.btn-primary:hover, .btn-outline-primary:hover {
+  background-color: #0056b3;
+  color: white;
+  transform: translateY(-2px);  /* ยกปุ่มขึ้นเมื่อ hover */
+}

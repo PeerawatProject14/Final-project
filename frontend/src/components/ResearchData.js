@@ -92,7 +92,7 @@ const ResearchData = () => {
         <p><strong>co_researcher:</strong> {research.co_researcher}</p>
         <p><strong>institution:</strong> {research.institution}</p>
         <p><strong>year:</strong> {research.year}</p>
-        <p><strong>อ้างอิง URL:</strong> <a href={research.url} target="_blank" rel="noopener noreferrer">{research.url}</a></p>
+        <p><strong>อ้างอิง URL:</strong> {research.url}</p>
         <p><strong>description:</strong> {research.description}</p>
         <p><strong>keyword:</strong> {research.keyword}</p>
 

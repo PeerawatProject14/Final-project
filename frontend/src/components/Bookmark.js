@@ -55,65 +55,70 @@ function BookmarkPage() {
   }, []);
 
   return (
-    <div className="bookmark-container">
-      <h2 className="text-center">บันทึกของฉัน</h2>
-      {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-      {loading && <p className="text-center">กำลังโหลดข้อมูล...</p>} 
+    <div className="bookmark-page">
+      <button className="back-btn" onClick={() => window.history.back()}>
+        กลับ
+      </button>
+      <div className="bookmark-content">
+        <h2 className="text-center">บันทึกของฉัน</h2>
+        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+        {loading && <p className="text-center">กำลังโหลดข้อมูล...</p>} 
 
-      <div className="view-toggle text-center">
-        <button 
-          className={`btn ${viewType === 'bookmark' ? 'btn-primary' : 'btn-outline-primary'}`} 
-          onClick={() => setViewType('bookmark')}
-        >
-          ดู Bookmark
-        </button>
-        <button 
-          className={`btn ${viewType === 'api' ? 'btn-primary' : 'btn-outline-primary'}`} 
-          onClick={() => setViewType('api')}
-        >
-          ดูผลลัพธ์จาก API
-        </button>
+        <div className="view-toggle text-center">
+          <button 
+            className={`btn ${viewType === 'bookmark' ? 'btn-primary' : 'btn-outline-primary'}`} 
+            onClick={() => setViewType('bookmark')}
+          >
+            ดู Bookmark
+          </button>
+          <button 
+            className={`btn ${viewType === 'api' ? 'btn-primary' : 'btn-outline-primary'}`} 
+            onClick={() => setViewType('api')}
+          >
+            ดูผลลัพธ์จาก API
+          </button>
+        </div>
+
+        {viewType === 'bookmark' ? (
+          <ul className="bookmark-list">
+            {bookmarks.length === 0 ? (
+              <p className="text-center">ยังไม่มีข้อมูลที่บันทึกไว้</p>
+            ) : (
+              bookmarks.map((bookmark) => (
+                <li key={bookmark.id} className="bookmark-item">
+                  <div className="bookmark-content">
+                    {bookmark.research && (
+                      <div>
+                        <h5>{bookmark.research.name}</h5>
+                        <p>รายละเอียด: {bookmark.research.description}</p>
+                        {/* ปุ่มไปหน้างานวิจัย */}
+                        <a href={`/research/${bookmark.research_id}`} className="btn btn-link">
+                          ไปหน้างานวิจัย
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </li>
+              ))
+            )}
+          </ul>
+        ) : (
+          <ul className="bookmark-list">
+            {apiSummaries.length === 0 ? (
+              <p className="text-center">ยังไม่มีผลลัพธ์จาก API ที่บันทึกไว้</p>
+            ) : (
+              apiSummaries.map((summary) => (
+                <li key={summary.id} className="bookmark-item">
+                  <div className="bookmark-content">
+                    <h4>ผลลัพธ์จากการสรุป</h4>
+                    <ReactMarkdown>{summary.summary}</ReactMarkdown>
+                  </div>
+                </li>
+              ))
+            )}
+          </ul>
+        )}
       </div>
-
-      {viewType === 'bookmark' ? (
-        <ul className="bookmark-list">
-          {bookmarks.length === 0 ? (
-            <p className="text-center">ยังไม่มีข้อมูลที่บันทึกไว้</p>
-          ) : (
-            bookmarks.map((bookmark) => (
-              <li key={bookmark.id} className="bookmark-item">
-                <div className="bookmark-content">
-                  {bookmark.research && (
-                    <div>
-                      <h5>{bookmark.research.name}</h5>
-                      <p>รายละเอียด: {bookmark.research.description}</p>
-                      {/* ปุ่มไปหน้างานวิจัย */}
-                      <a href={`/research/${bookmark.research_id}`} className="btn btn-link">
-                        ไปหน้างานวิจัย
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </li>
-            ))
-          )}
-        </ul>
-      ) : (
-        <ul className="bookmark-list">
-          {apiSummaries.length === 0 ? (
-            <p className="text-center">ยังไม่มีผลลัพธ์จาก API ที่บันทึกไว้</p>
-          ) : (
-            apiSummaries.map((summary) => (
-              <li key={summary.id} className="bookmark-item">
-                <div className="bookmark-content">
-                  <h4>ผลลัพธ์จากการสรุป</h4>
-                  <ReactMarkdown>{summary.summary}</ReactMarkdown>
-                </div>
-              </li>
-            ))
-          )}
-        </ul>
-      )}
     </div>
   );
 }

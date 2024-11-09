@@ -1,13 +1,15 @@
 // CompareResults.js
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import './CompareResults.css';
 
 const CompareResults = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { description1, description2 } = location.state;
   const [compareResult, setCompareResult] = useState('');
-  const [loading, setLoading] = useState(true); // สถานะโหลด
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCompareResult = async () => {
@@ -32,7 +34,7 @@ const CompareResults = () => {
       } catch (error) {
         console.error('Error comparing research:', error);
       } finally {
-        setLoading(false); // เมื่อเสร็จสิ้นการโหลด
+        setLoading(false);
       }
     };
 
@@ -40,13 +42,18 @@ const CompareResults = () => {
   }, [description1, description2]);
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h3>ผลลัพธ์การเปรียบเทียบ</h3>
-      {loading ? (
-        <p>กำลังโหลดข้อมูล...</p> // สัญลักษณ์โหลด
-      ) : (
-        <ReactMarkdown>{compareResult}</ReactMarkdown>
-      )}
+    <div className="background-container">
+      <div className="container">
+        <h3 className="heading">ผลลัพธ์การเปรียบเทียบ</h3>
+        {loading ? (
+          <p className="loading">กำลังโหลดข้อมูล...</p>
+        ) : (
+          <ReactMarkdown className="result">{compareResult}</ReactMarkdown>
+        )}
+        <button className="backButton" onClick={() => navigate(-1)}>
+          กลับ
+        </button>
+      </div>
     </div>
   );
 };
