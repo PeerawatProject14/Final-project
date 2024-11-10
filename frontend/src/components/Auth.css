@@ -135,7 +135,7 @@ p a:hover {
   justify-content: center;
   align-items: center;
   height: 100vh; /* Use full viewport height */
-  background-image: url('C:/Users/admin/OneDrive/เอกสาร/GitHub/Final-project/frontend/src/images/test.jpg'); /* Replace with your image path */
+  background-image: url('C:/My Projects/Final project/frontend/src/images/test.jpg'); /* Replace with your image path */
   background-size: cover; /* Cover the entire container */
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Prevent tiling */

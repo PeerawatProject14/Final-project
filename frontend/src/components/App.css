@@ -229,7 +229,7 @@ input[type="text"] {
 
 /* เพิ่มส่วนนี้เพื่อกำหนดรูปภาพพื้นหลัง */
 .home-background {
-  background-image: url('C:/Users/admin/OneDrive/เอกสาร/GitHub/Final-project/frontend/src/images/test.jpg'); /* เปลี่ยนเส้นทางให้ตรงกับที่อยู่ของรูปภาพ */
+  background-image: url('C:/My Projects/Final project/frontend/src/images/test.jpg'); /* เปลี่ยนเส้นทางให้ตรงกับที่อยู่ของรูปภาพ */
   background-size: cover;
   background-position: center;
   min-height: 100vh; /* ปรับขนาดให้พอดีกับความสูงของหน้าจอ */

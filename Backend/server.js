@@ -38,7 +38,52 @@ app.post('/api/process-research', async (req, res) => {
   }
 
   // เรียกใช้ Python script
-  const pythonProcess = spawn('python', ['TestCosine.py']);
+  const pythonProcess = spawn('python', ['ResearchCosine.py']);
+
+  // ส่งข้อมูลไปยัง Python script
+  pythonProcess.stdin.write(JSON.stringify(storedResearch));
+  pythonProcess.stdin.end();
+
+  let dataToSend = '';
+  pythonProcess.stdout.on('data', (data) => {
+    dataToSend += data.toString();
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Python error: ${data}`);
+  });
+
+  pythonProcess.on('close', (code) => {
+    console.log(`Python process exited with code ${code}`);
+
+    if (dataToSend) {
+      try {
+        const jsonResponse = JSON.parse(dataToSend);
+        
+        // แสดงข้อมูลที่ได้รับจาก Python ใน terminal
+        console.log("Data received from Python:", jsonResponse);
+        
+        res.json(jsonResponse); // ส่งข้อมูลกลับไปยัง React
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+        res.status(500).json({ error: 'Error parsing JSON response' });
+      }
+    } else {
+      res.status(500).json({ error: 'No data received from Python script' });
+    }
+  });
+});
+app.post('/api/process-userresearch', async (req, res) => {
+  const storedResearch = req.body;
+
+  console.log("Received data from React:", storedResearch);
+
+  if (!storedResearch) {
+    return res.status(400).json({ error: 'Stored research data is required' });
+  }
+
+  // เรียกใช้ Python script
+  const pythonProcess = spawn('python', ['ResearchCosine.py']);
 
   // ส่งข้อมูลไปยัง Python script
   pythonProcess.stdin.write(JSON.stringify(storedResearch));

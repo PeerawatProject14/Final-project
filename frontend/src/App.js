@@ -7,6 +7,7 @@ import ResearchData from './components/ResearchData';
 import BookmarkPage from './components/Bookmark';
 import ResearchDetail from './components/ResearchData';
 import CompareResults from './components/CompareResults';
+import UserResearch from './components/UserResearch';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/bookmark" element={<BookmarkPage />} />
         <Route path="/research/:research_id" element={<ResearchDetail />} />
         <Route path="/compare" element={<CompareResults />} />
+        <Route path="/UserResearch" element={<UserResearch />} />
       </Routes>
     </Router>
   );

@@ -22,7 +22,8 @@ const ResearchData = () => {
         id: research.id,
         name: research.name,
         description: research.description,
-        PredictedLabel: research.PredictedLabel
+        PredictedLabel: research.PredictedLabel,
+        embedding: research.embedding
       };
       setStoredResearch(researchData);
 
@@ -42,7 +43,7 @@ const ResearchData = () => {
         })
         .then((data) => {
           // กำหนดค่า similarResearch ตามข้อมูลที่ได้จาก Python script
-          setSimilarResearch(data);
+          setSimilarResearch(data);  // เก็บข้อมูลที่ส่งมาจาก Backend
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -101,14 +102,15 @@ const ResearchData = () => {
         </div>
 
         {/* แสดงการ์ดวิจัยที่คล้ายกัน */}
-        {similarResearch && similarResearch.matching_research && (
+        {similarResearch && similarResearch.results && (
           <div className="similar-research-container">
-            {similarResearch.matching_research.map((item) => (
+            {similarResearch.results.map((item) => (
               <div className="research-card" key={item.id}>
                 <h4>{item.name}</h4>
                 <p><strong>id:</strong> {item.id}</p>
                 <p><strong>description:</strong> {item.description}</p>
                 <p><strong>PredictedLabel:</strong> {item.PredictedLabel}</p>
+                <p><strong>similarity:</strong> {item.similarity}</p>
                 {/* คุณสามารถเพิ่มข้อมูลอื่น ๆ ที่ต้องการแสดงที่นี่ */}
               </div>
             ))}
