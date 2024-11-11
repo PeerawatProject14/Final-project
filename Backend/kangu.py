@@ -2,6 +2,7 @@ import json
 import torch
 from transformers import AutoTokenizer, AutoModel
 import numpy as np
+import sys
 
 # โหลด tokenizer และโมเดลที่ใช้สำหรับสร้าง embedding
 tokenizer = AutoTokenizer.from_pretrained('Peerawat2024/AmbatronBERTa')
@@ -9,7 +10,7 @@ embedding_model = AutoModel.from_pretrained('Peerawat2024/AmbatronBERTa')
 
 # ฟังก์ชันสำหรับแปลงข้อความเป็น embedding
 def generate_embedding(text):
-    inputs = tokenizer(text, return_tensors='pt', padding=True, truncation=True)
+    inputs = tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=512)
 
     # สร้าง embeddings โดยใช้ model
     with torch.no_grad():  # ปิดการคำนวณ gradients เพื่อประหยัดหน่วยความจำ
@@ -20,32 +21,35 @@ def generate_embedding(text):
 
     return cls_embedding.flatten()  # แปลงเป็น numpy array และ flatten
 
-def main():
+# รับข้อมูล JSON จาก stdin
+def process_request(input_data):
     try:
-        # รับข้อมูล JSON จากผู้ใช้ผ่าน input()
-        input_data = input("กรุณากรอกข้อมูล JSON: ").strip()
-
-        # แปลงข้อมูล JSON
-        request_data = json.loads(input_data)  # แปลงข้อมูล JSON เป็น dictionary
+        # แปลงข้อมูล JSON ที่ได้รับ
+        request_data = json.loads(input_data)
 
         # ดึงค่าจาก request_data โดยเฉพาะ description
         description = request_data.get('description')
         if not description:
-            print("Error: 'description' is required in the input data.")
-            return
-
-        # แสดงผล description
-        print(f"Description: {description}")
+            return json.dumps({"error": "'description' is required in the input data."})
 
         # ขั้นตอนการแปลงข้อความเป็น embedding
         embedding = generate_embedding(description)
-        print("Embedding generated successfully!")
-        print(f"Embedding (first 10 elements): {embedding[:10]}")  # แสดงแค่ 10 ค่าแรกของ embedding
+
+        # สร้างผลลัพธ์ที่ต้องการส่งกลับ
+        result = {
+            "embedding": embedding.tolist()  # แปลง numpy array เป็น list
+        }
+
+        # ส่งผลลัพธ์กลับ
+        return json.dumps(result, ensure_ascii=False)
 
     except json.JSONDecodeError as e:
-        print(f"Error: Invalid JSON format. {str(e)}")
+        return json.dumps({"error": f"Invalid JSON format: {str(e)}"})
     except Exception as e:
-        print(f"Error: {str(e)}")
+        return json.dumps({"error": str(e)})
 
+# เรียกใช้งานฟังก์ชันจาก stdin
 if __name__ == '__main__':
-    main()
+    input_data = sys.stdin.read().strip()  # รับข้อมูลจาก stdin
+    response = process_request(input_data)
+    print(response)  # ส่งข้อมูลออกทาง stdout
