@@ -83,7 +83,7 @@ app.post('/api/process-userresearch', async (req, res) => {
   }
 
   // เรียกใช้ Python script
-  const pythonProcess = spawn('python', ['ResearchCosine.py']);
+  const pythonProcess = spawn('python', ['UserResearchCosine.py']);
 
   // ส่งข้อมูลไปยัง Python script
   pythonProcess.stdin.write(JSON.stringify(storedResearch));
