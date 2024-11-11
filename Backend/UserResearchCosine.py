@@ -28,11 +28,10 @@ def predict_label(text):
     outputs = model_for_label(**inputs)
     logits = outputs.logits  # ได้ logits จากโมเดลที่มีหัวการพยากรณ์
     predicted_label = torch.argmax(logits, dim=1).item()
-    return predicted_label
+    return predicted_label  
 
 # ฟังก์ชันสำหรับแปลงข้อความเป็น embedding
 def generate_embedding(text):
-    # ทำการ tokenization ข้อความ
     inputs = tokenizer(text, return_tensors='pt', padding=True, truncation=True)
 
     # สร้าง embeddings โดยใช้ model
@@ -54,77 +53,104 @@ def calculate_cosine_similarity(input_embedding, db_embeddings):
 
 # ฟังก์ชันสำหรับดึงข้อมูลจากฐานข้อมูลที่มี PredictedLabel ตรงกับเงื่อนไข
 def fetch_research_by_label(label):
-    connection = mysql.connector.connect(**db_config)
-    cursor = connection.cursor(dictionary=True)
+    try:
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor(dictionary=True)
 
-    query = "SELECT id, name, description, PredictedLabel, embedding FROM research WHERE PredictedLabel = %s"
-    cursor.execute(query, (label,))
-    research_data = cursor.fetchall()
+        query = "SELECT id, name, description, PredictedLabel, embedding FROM research WHERE PredictedLabel = %s"
+        cursor.execute(query, (label,))
+        research_data = cursor.fetchall()
 
-    cursor.close()
-    connection.close()
+        cursor.close()
+        connection.close()
 
-    return pd.DataFrame(research_data)
+        return pd.DataFrame(research_data)
+
+    except mysql.connector.Error as err:
+        return {"error": f"Database error: {err}"}  # ส่งกลับเป็น JSON
+
+# ฟังก์ชันสำหรับการแปลง string embedding จากฐานข้อมูลให้เป็น numpy array
+def parse_embedding(embedding_str):
+    # ตรวจสอบว่า embedding_str มีค่าหรือไม่ และแปลงจาก string เป็น numpy array
+    if embedding_str:
+        return np.array(list(map(float, embedding_str.strip('[]').split())), dtype=np.float32)
+    else:
+        return np.array([])  # คืนค่าผลลัพธ์เป็น array ว่างถ้าไม่พบข้อมูล
 
 # ฟังก์ชัน main สำหรับรันโปรแกรม
 def main():
     # รับข้อมูล JSON จาก stdin
     input_data = sys.stdin.read().strip()
-    request_data = json.loads(input_data)
 
-    input_description = request_data.get('description')  # ข้อความที่ส่งเข้ามา
+    try:
+        request_data = json.loads(input_data)
 
-    if not input_description:
-        output_data = {"error": "Description is required"}
-        sys.stdout.buffer.write(json.dumps(output_data, ensure_ascii=False).encode('utf-8'))
-        sys.stdout.flush()
-        return
+        input_description = request_data.get('description')  # ข้อความที่ส่งเข้าม
 
-    # ขั้นตอน predict label ของข้อความ
-    target_label = predict_label(input_description)
+        if not input_description:
+            output_data = {"error": "Description is required"}
+            print(json.dumps(output_data, ensure_ascii=False))  # ส่งกลับเป็น JSON
+            return
 
-    # สร้าง embedding ของข้อความ input
-    input_embedding = generate_embedding(input_description)
+        # แก้ไขปัญหาช่องว่างหรือ characters ที่ไม่จำเป็น
+        input_description = input_description.strip()
 
-    # ดึงข้อมูลจากฐานข้อมูลที่มี label ตรงกัน
-    research_df = fetch_research_by_label(target_label)
+        # เช็คให้มั่นใจว่า input_description ไม่มีค่าที่เป็น NaN หรือว่าง
+        if not input_description:
+            output_data = {"error": "Description cannot be empty"}
+            print(json.dumps(output_data, ensure_ascii=False))  # ส่งกลับเป็น JSON
+            return
 
-    if research_df.empty:
-        output_data = {"error": "No matching records found"}
-        sys.stdout.buffer.write(json.dumps(output_data, ensure_ascii=False).encode('utf-8'))
-        sys.stdout.flush()
-        return
+        # ขั้นตอน predict label ของข้อความ
+        try:
+            target_label = predict_label(input_description)
+        except ValueError as e:
+            output_data = {"error": str(e)}
+            print(json.dumps(output_data, ensure_ascii=False))  # ส่งกลับเป็น JSON
+            return
 
-    # แปลง embedding ในฐานข้อมูลให้เป็น numpy array
-    def parse_embedding(embedding_str):
-        return np.array(list(map(float, embedding_str.strip('[]').split())), dtype=np.float32)
+        # สร้าง embedding ของข้อความ input
+        input_embedding = generate_embedding(input_description)
 
-    # ดึง embedding ของทุกแถวใน DataFrame
-    research_df['embedding'] = research_df['embedding'].apply(parse_embedding)
+        # ดึงข้อมูลจากฐานข้อมูลที่มี label ตรงกัน
+        research_df = fetch_research_by_label(target_label)
 
-    # คำนวณ cosine similarity ระหว่าง embedding ที่ส่งมาและทุกๆ embedding ในฐานข้อมูล
-    similarities = calculate_cosine_similarity(input_embedding, research_df['embedding'])
+        if research_df.empty:
+            output_data = {"error": "No matching records found"}
+            print(json.dumps(output_data, ensure_ascii=False))  # ส่งกลับเป็น JSON
+            return
 
-    # เพิ่มค่า similarity ลงใน DataFrame
-    research_df['similarity'] = similarities
+        # แปลง embedding ในฐานข้อมูลให้เป็น numpy array
+        research_df['embedding'] = research_df['embedding'].apply(parse_embedding)
 
-    # เรียงตาม similarity จากมากไปน้อยและเลือกแค่ 10 แถวแรก
-    top_results_df = research_df.sort_values(by='similarity', ascending=False).head(10)
+        # คำนวณ cosine similarity ระหว่าง embedding ที่ส่งมาและทุกๆ embedding ในฐานข้อมูล
+        similarities = calculate_cosine_similarity(input_embedding, research_df['embedding'])
 
-    # แปลงผลลัพธ์เป็น JSON รวมทุกคอลัมน์
-    # เปลี่ยน ndarray เป็น list เพื่อให้สามารถแปลงเป็น JSON ได้
-    output_data = {
-        'target_label': target_label,
-        'results': top_results_df.to_dict(orient='records')  # ส่งออกทุกคอลัมน์
-    }
+        # เพิ่มค่า similarity ลงใน DataFrame
+        research_df['similarity'] = similarities
 
-    # แปลง ndarray ใน results ให้เป็น list ก่อนส่งออก
-    for result in output_data['results']:
-        result['embedding'] = result['embedding'].tolist()  # แปลงเป็น list
+        # เรียงตาม similarity จากมากไปน้อยและเลือกแค่ 10 แถวแรก
+        top_results_df = research_df.sort_values(by='similarity', ascending=False).head(10)
 
-    # ส่งข้อมูล JSON กลับไปยัง Node.js
-    sys.stdout.buffer.write(json.dumps(output_data, ensure_ascii=False).encode('utf-8'))
-    sys.stdout.flush()
+        # แปลงผลลัพธ์เป็น JSON รวมทุกคอลัมน์
+        output_data = {
+            'target_label': target_label,
+            'results': top_results_df.to_dict(orient='records')  # ส่งออกทุกคอลัมน์
+        }
+
+        # แปลง ndarray ใน results ให้เป็น list ก่อนส่งออก
+        for result in output_data['results']:
+            result['embedding'] = result['embedding'].tolist()  # แปลงเป็น list
+
+        # ส่งข้อมูล JSON กลับไปยัง Node.js หรือแสดงใน terminal
+        print(json.dumps(output_data, ensure_ascii=False))  # ส่งกลับเป็น JSON
+
+    except json.JSONDecodeError as e:
+        output_data = {"error": f"Invalid JSON format. {str(e)}"}
+        print(json.dumps(output_data, ensure_ascii=False))  # ส่งกลับเป็น JSON
+    except Exception as e:
+        output_data = {"error": f"Unexpected error: {str(e)}"}
+        print(json.dumps(output_data, ensure_ascii=False))  # ส่งกลับเป็น JSON
 
 if __name__ == '__main__':
     main()

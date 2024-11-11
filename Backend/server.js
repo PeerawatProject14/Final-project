@@ -91,11 +91,11 @@ app.post('/api/process-userresearch', async (req, res) => {
 
   let dataToSend = '';
   pythonProcess.stdout.on('data', (data) => {
-    dataToSend += data.toString();
+    dataToSend += data.toString('utf-8'); // กำหนดให้ใช้ 'utf-8' เพื่อความถูกต้อง
   });
 
   pythonProcess.stderr.on('data', (data) => {
-    console.error(`Python error: ${data}`);
+    console.error(`Python error: ${data.toString()}`);
   });
 
   pythonProcess.on('close', (code) => {
@@ -103,12 +103,14 @@ app.post('/api/process-userresearch', async (req, res) => {
 
     if (dataToSend) {
       try {
+        // ตรวจสอบข้อมูลที่ได้รับจาก Python
         const jsonResponse = JSON.parse(dataToSend);
-        
+
         // แสดงข้อมูลที่ได้รับจาก Python ใน terminal
         console.log("Data received from Python:", jsonResponse);
-        
-        res.json(jsonResponse); // ส่งข้อมูลกลับไปยัง React
+
+        // ส่งข้อมูลกลับไปยัง React
+        res.json(jsonResponse);
       } catch (error) {
         console.error('Error parsing JSON:', error);
         res.status(500).json({ error: 'Error parsing JSON response' });
