@@ -6,6 +6,7 @@ import numpy as np
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoModel
 from sklearn.metrics.pairwise import cosine_similarity
 import torch
+import io
 
 # กำหนดข้อมูลการเชื่อมต่อกับฐานข้อมูล
 db_config = {
@@ -79,8 +80,11 @@ def parse_embedding(embedding_str):
 
 # ฟังก์ชัน main สำหรับรันโปรแกรม
 def main():
+    # ตั้งค่า stdout ให้เป็น utf-8 เพื่อรองรับการแสดงผลตัวอักษรพิเศษ
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
     # รับข้อมูล JSON จาก stdin
-    input_data = sys.stdin.read().strip()
+    input_data = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8-sig').read().strip()
 
     try:
         request_data = json.loads(input_data)
