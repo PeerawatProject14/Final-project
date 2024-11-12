@@ -116,40 +116,40 @@ function HomePage() {
 
   return (
     <div className={`d-flex flex-column min-vh-100 ${fadeIn ? 'fade-in' : 'fade-out'}`}>
-      <header className="header d-flex justify-content-between align-items-center py-3 border-bottom">
+      <header className="header d-flex justify-content-between align-items-center py-3">
         <h1 className="logo mb-0">TH-RESEARCH</h1>
         <nav>
           <ul className="nav">
-            <li className="nav-item">
-              <button onClick={handleBookmarkClick} className="btn btn-link">
-                BOOKMARK
-              </button>
-            </li>
-          
-            <li className="nav-item">
-              <button onClick={handleUserResearchClick} className="btn btn-link">
-                ค้นหาจากงานวิจัยขิงคุณ
-              </button>
-            </li>
             <li className="nav-item">
               <button onClick={handleSearchClick} className="btn btn-link">
                 ค้นหา
               </button>
             </li>
+            <li className="nav-item">
+              <button onClick={handleUserResearchClick} className="btn btn-link">
+                ค้นหาจากงานวิจัยของคุณ
+              </button>
+            </li>
+            <li className="nav-item">
+              <button onClick={handleBookmarkClick} className="btn btn-link">
+                BOOKMARK
+              </button>
+            </li>
+
             {isLoggedIn ? (
               <>
                 <li className="nav-item">
                   <span className="navbar-text">Logged in as: {userEmail} (User ID: {userId})</span>
                 </li>
                 <li className="nav-item">
-                  <button onClick={handleLogout} className="btn btn-danger">
+                  <button onClick={handleLogout} className="btn btn-danger mx-2">
                     Logout
                   </button>
                 </li>
               </>
             ) : (
               <li className="nav-item">
-                <Link to="/login" className="btn btn-primary">
+                <Link to="/login" className="btn btn-primary mx-2">
                   เข้าสู่ระบบ
                 </Link>
               </li>
@@ -178,7 +178,7 @@ function HomePage() {
         </div>
       </main>
 
-      <footer className="footer d-flex justify-content-between align-items-center py-3 border-top mt-auto">
+      <footer className="footer d-flex justify-content-between align-items-center py-3 mt-auto">
         <div>
           <p>© 2566 บริษัทของคุณ</p>
         </div>

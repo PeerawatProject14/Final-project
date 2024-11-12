@@ -1,12 +1,12 @@
 /* พื้นหลัง */
 .bookmark-page {
-  background-color: #121212;  /* เปลี่ยนให้เข้มขึ้นเล็กน้อย */
+  background-color: #f8f9fa; /* สีพื้นหลังสว่าง */
   position: relative;
   height: 100vh;
-  color: white;
+  color: #333; /* ข้อความสีเข้มเพื่อให้อ่านง่าย */
   padding: 30px;
   overflow-y: auto;
-  font-family: 'Arial', sans-serif;  /* เพิ่มฟอนต์ที่ดูทันสมัย */
+  font-family: 'Arial', sans-serif;
 }
 
 /* ปุ่มกลับ */
@@ -14,19 +14,19 @@
   position: absolute;
   top: 20px;
   left: 20px;
-  background-color: #4e4e4e;
+  background-color: #007bff; /* ปุ่มสีฟ้า */
   border: none;
   color: white;
-  padding: 12px 25px;  /* เพิ่มขนาดปุ่มให้เหมาะสม */
+  padding: 12px 25px;
   border-radius: 8px;
-  font-weight: bold;  /* ทำให้ตัวอักษรหนาขึ้น */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);  /* เพิ่มเงาให้ปุ่ม */
-  transition: background-color 0.3s ease, transform 0.2s ease;  /* เพิ่มเอฟเฟกต์การเคลื่อนไหว */
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* เงาเบาๆ */
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .back-btn:hover {
-  background-color: #6c757d;
-  transform: translateY(-2px);  /* ยกปุ่มเล็กน้อยเมื่อ hover */
+  background-color: #0056b3; /* สีที่เข้มขึ้นเมื่อ hover */
+  transform: translateY(-2px); /* ยกปุ่มเล็กน้อย */
 }
 
 /* เนื้อหาภายใน */
@@ -34,46 +34,48 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #333;
-  padding: 12px 18px;  /* ปรับให้ padding ใหญ่ขึ้นเล็กน้อย */
-  margin-bottom: 12px;  /* เพิ่มระยะห่างระหว่างรายการ */
-  border-radius: 10px;  /* เพิ่มมุมโค้งให้ดูนุ่มนวลขึ้น */
-  width: 100%;
+  background-color: #ffffff; /* สีพื้นหลังของรายการ */
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* เงาเบาๆ */
   transition: background-color 0.3s ease;
 }
 
 .bookmark-item:hover {
-  background-color: #444;  /* เพิ่มสีเมื่อ hover */
+  background-color: #f1f1f1; /* สีเมื่อ hover */
 }
 
 .bookmark-list {
   width: 100%;
-  max-width: 1600px;  /* เพิ่มขนาดความกว้างสูงสุดให้เหมาะสม */
+  max-width: 1200px; /* เพิ่มขนาดความกว้างสูงสุด */
   margin: 0 auto;
 }
 
 /* สไตล์สำหรับหัวข้อ */
 .bookmark-content h4 {
   margin: 0;
-  font-size: 20px;
-  font-weight: 600;  /* เพิ่มความหนาของตัวอักษร */
-  color: #f1f1f1;  /* เปลี่ยนสีให้เหมาะกับธีมมืด */
+  font-size: 22px;
+  font-weight: 600;
+  color: #333; /* สีหัวข้อ */
 }
 
 .bookmark-content p {
   margin: 8px 0;
   font-size: 15px;
-  color: #ccc;  /* เปลี่ยนสีข้อความให้อ่านง่ายขึ้น */
+  color: #666; /* สีข้อความที่อ่านง่าย */
 }
 
 /* การจัดการปุ่ม */
 .view-toggle {
-  margin-bottom: 25px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
 }
 
 .view-toggle button {
-  margin: 0 10px;
-  padding: 8px 16px;  /* เพิ่มขนาดปุ่ม */
+  margin: 0 12px;
+  padding: 10px 20px;
   font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
@@ -81,7 +83,7 @@
 }
 
 .view-toggle button:hover {
-  background-color: #5a6268;  /* สีปุ่มเมื่อ hover */
+  background-color: #0056b3; /* สีปุ่มเมื่อ hover */
   color: white;
 }
 
@@ -90,7 +92,7 @@
   background-color: #007bff;
   color: white;
   border-radius: 5px;
-  padding: 10px 20px;
+  padding: 12px 25px;
   font-size: 16px;
 }
 
@@ -98,11 +100,22 @@
   border: 2px solid #007bff;
   color: #007bff;
   border-radius: 5px;
-  padding: 10px 20px;
+  padding: 12px 25px;
 }
 
 .btn-primary:hover, .btn-outline-primary:hover {
   background-color: #0056b3;
   color: white;
-  transform: translateY(-2px);  /* ยกปุ่มขึ้นเมื่อ hover */
+  transform: translateY(-2px); /* ยกปุ่มขึ้นเมื่อ hover */
+}
+.bookmark-page {
+  background-image: url('C:/My Projects/Final project/frontend/src/images/test.jpg'); /* ใช้ URL ที่ถูกต้อง */
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  height: 100vh;
+  color: white;
+  padding: 30px;
+  overflow-y: auto;
+  font-family: 'Arial', sans-serif;
 }
