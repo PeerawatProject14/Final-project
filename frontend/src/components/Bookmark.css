@@ -59,6 +59,9 @@
   font-weight: 600;
   color: #333; /* สีหัวข้อ */
 }
+.bookmark-content h5 {
+  color: #000000; /* สีหัวข้อ */
+}
 
 .bookmark-content p {
   margin: 8px 0;
