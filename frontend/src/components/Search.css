@@ -10,6 +10,7 @@
   display: flex;
   flex-direction: column;
   align-items: center; /* จัดตำแหน่งเนื้อหาให้อยู่ตรงกลาง */
+  font-family: 'Kanit', sans-serif;
 }
   
   .search-title {
@@ -181,8 +182,49 @@
   
   .research-card {
     margin-bottom: 15px;
+    margin-left: 10px;
+    margin-right: 10px;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #ddd !important;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
   }
+  .research-card-box{
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .custom-search-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 700px; /* กำหนดความกว้างสูงสุดให้กับ container */
+    margin: 0 auto;
+  }
+  
+  .custom-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    resize: none;
+    height: 100px; /* กำหนดความสูงที่ต้องการ */
+  }
+  
+  .custom-search-button {
+    margin-top: 10px;
+    padding: 8px 16px; /* ปรับ padding ให้เล็กลง */
+    border: none;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 14px; /* ปรับขนาดตัวอักษรให้เล็กลง */
+    cursor: pointer;
+    width: auto; /* ปรับให้ปุ่มมีขนาดตามเนื้อหา */
+    display: block;
+    margin-left: auto;
+    margin-right: auto; /* ทำให้ปุ่มอยู่ตรงกลาง */
+  }
+  
+  

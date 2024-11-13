@@ -58,7 +58,7 @@ def fetch_research_by_label(label):
         connection = mysql.connector.connect(**db_config)
         cursor = connection.cursor(dictionary=True)
 
-        query = "SELECT id, name, description, PredictedLabel, embedding FROM research WHERE PredictedLabel = %s"
+        query = "SELECT * FROM research WHERE PredictedLabel = %s"
         cursor.execute(query, (label,))
         research_data = cursor.fetchall()
 

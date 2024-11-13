@@ -8,7 +8,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const port = 5000;
-const apiKey = "API KEY";
+const apiKey = "Api key";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const dbConfig = {
@@ -232,26 +232,6 @@ app.get('/research', async (req, res) => {
     }
   }
 });
-app.post('/api/generate', async (req, res) => {
-  const { input } = req.body;
-
-  // ตรวจสอบว่ามีการส่ง input มาหรือไม่
-  if (!input) {
-    return res.status(400).json({ error: 'Input is required' });
-  }
-
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro",systemInstruction: "สรุปบทความงานวิจัย" });
-    const result = await model.generateContent([input]);
-    
-    // ส่งผลลัพธ์เป็น JSON
-    res.json({ output: result.response.text() });
-  } catch (error) {
-    console.error("Error generating content:", error);
-    res.status(500).json({ error: 'Error generating content' });
-  }
-});
-
 // Endpoint สำหรับการบันทึกข้อมูลลงฐานข้อมูล
 app.post('/api/save', async (req, res) => {
   const { output, user_id } = req.body;
@@ -288,7 +268,7 @@ app.post('/api/compare', async (req, res) => {
     // ตั้งค่าการใช้ระบบสำหรับการเปรียบเทียบ
     const model = genAI.getGenerativeModel({ 
       model: "gemini-1.5-pro",
-      systemInstruction: "เปรียบเทียบงานวิจัย และหาความคล้ายกัน และการนำมาประยุกต์ใช้ร่วมกัน(ตอบมาเยอะๆ)"
+      systemInstruction: "เปรียบเทียบงานวิจัยโดยเขียนบอกด้วยว่ากำลังเปรียบเทียบอะไรอยู่ และหาความคล้ายกัน และการนำมาประยุกต์ใช้ร่วมกัน(ตอบมาเยอะๆ)"
     });
 
     // ส่งคำอธิบายสองรายการเพื่อให้โมเดลทำการเปรียบเทียบ

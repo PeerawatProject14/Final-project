@@ -10,6 +10,8 @@ const CompareResults = () => {
   const { description1, description2 } = location.state;
   const [compareResult, setCompareResult] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isSaved, setIsSaved] = useState(false); // สถานะการบันทึก
+  const userId = localStorage.getItem('userId'); // ดึง userId จาก localStorage
 
   useEffect(() => {
     const fetchCompareResult = async () => {
@@ -41,6 +43,31 @@ const CompareResults = () => {
     fetchCompareResult();
   }, [description1, description2]);
 
+  const handleSave = async () => {
+    if (isSaved) return; // หากบันทึกไปแล้วจะไม่ทำการบันทึกซ้ำ
+
+    try {
+      const response = await fetch('http://localhost:5000/api/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ output: compareResult, user_id: userId }),
+      });
+
+      const data = await response.json();
+      if (data.message) {
+        alert('บันทึกข้อมูลสำเร็จ');
+        setIsSaved(true); // อัพเดตสถานะว่าได้บันทึกแล้ว
+      } else {
+        alert('การบันทึกข้อมูลล้มเหลว');
+      }
+    } catch (error) {
+      console.error('Error saving data:', error);
+      alert('การบันทึกข้อมูลล้มเหลว');
+    }
+  };
+
   return (
     <div className="background-container">
       <div className="container">
@@ -48,11 +75,22 @@ const CompareResults = () => {
         {loading ? (
           <p className="loading">กำลังโหลดข้อมูล...</p>
         ) : (
-          <ReactMarkdown className="result">{compareResult}</ReactMarkdown>
+          <>
+            <ReactMarkdown className="result">{compareResult}</ReactMarkdown>
+            <div className="button-container">
+              <button
+                className="saveButton"
+                onClick={handleSave}
+                disabled={isSaved} // ทำให้ปุ่มไม่สามารถกดได้หลังจากบันทึกสำเร็จ
+              >
+                {isSaved ? 'บันทึกสำเร็จ' : 'บันทึกผล'}
+              </button>
+              <button className="backButton" onClick={() => navigate(-1)}>
+                กลับ
+              </button>
+            </div>
+          </>
         )}
-        <button className="backButton" onClick={() => navigate(-1)}>
-          กลับ
-        </button>
       </div>
     </div>
   );
