@@ -14,33 +14,35 @@ function RegisterPage() {
     e.preventDefault();
     setError('');
     setSuccess('');
-
+  
     // ตรวจสอบความถูกต้องของรหัสผ่าน
     const passwordCriteria = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     if (!password.match(passwordCriteria)) {
       setError('รหัสผ่านต้องมีตัวพิมพ์เล็ก ตัวพิมพ์ใหญ่ ตัวเลข และมีความยาวมากกว่า 8 ตัวอักษร');
       return;
     }
-
+  
     // ตรวจสอบรหัสผ่าน
     if (password !== confirmPassword) {
       setError('รหัสผ่านไม่ตรงกัน');
       return;
     }
-
+  
     try {
-      // ส่งข้อมูลลงทะเบียนไปยังเซิร์ฟเวอร์โดยไม่เข้ารหัสรหัสผ่าน
       const response = await fetch('http://localhost:5000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }), // ส่งรหัสผ่านตรงๆ ไปที่เซิร์ฟเวอร์
+        body: JSON.stringify({ email, password }),
       });
-
+  
       if (response.ok) {
         setSuccess('ลงทะเบียนสำเร็จ!');
         navigate('/login'); // เปลี่ยนเส้นทางไปยังหน้าเข้าสู่ระบบ
+      } else if (response.status === 409) { // เช็กสถานะ 409 (Conflict)
+        const data = await response.json();
+        setError(data.message || 'อีเมลนี้ได้ถูกลงทะเบียนแล้ว');
       } else {
         const data = await response.json();
         setError('เกิดข้อผิดพลาดในการลงทะเบียน: ' + data.message);
@@ -49,6 +51,7 @@ function RegisterPage() {
       setError('เกิดข้อผิดพลาดในการลงทะเบียน: ' + err.message);
     }
   };
+  
 
   return (
     <div className="auth-container d-flex justify-content-center align-items-center vh-100">

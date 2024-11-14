@@ -83,10 +83,11 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
                       <p><strong>keyword:</strong> {truncateText(research.keyword)}</p>
                     </Link>
                     <div className="research-buttons">
-                      <button
+                    <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleBookmark(research.id); // ใช้งาน handleBookmark ที่ถูกส่งมา
+                          handleBookmark(research.id); // เรียกฟังก์ชัน handleBookmark
+                          alert('บุ๊คมาร์คสำเร็จ'); // แจ้งเตือนว่าบุ๊คมาร์คสำเร็จ
                         }}
                         className={`btn ${bookmarks.includes(research.id) ? 'bookmark-selected' : 'outline-bookmark'}`}
                       >

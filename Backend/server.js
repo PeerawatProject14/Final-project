@@ -8,7 +8,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const port = 5000;
-const apiKey = "Api key";
+const apiKey = "Api";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const dbConfig = {
@@ -169,7 +169,7 @@ app.post('/register', async (req, res) => {
   } catch (err) {
     console.error('Error registering user:', err);
     if (err.code === 'ER_DUP_ENTRY') {
-      return res.status(409).json({ message: 'Email already exists' });
+      return res.status(409).json({ message: 'อีเมลนี้ถูกใช้แล้ว' });
     }
     res.status(500).json({ message: err.message });
   } finally {

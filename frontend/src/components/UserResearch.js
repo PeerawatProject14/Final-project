@@ -66,24 +66,39 @@ function UserResearch() {
     }
   };
 
-  const handleBookmark = (researchId, e) => {
+  const handleBookmark = async (researchId, e) => {
     e.stopPropagation();
-
+  
     // ตรวจสอบการล็อกอินก่อนใช้งานฟังก์ชันบุ๊คมาร์ค
-    if (!localStorage.getItem("userId")) {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
       alert("กรุณาล็อกอินก่อนเพื่อบุ๊คมาร์ค");
       return;
     }
-
-    // ปรับการอัปเดต `bookmarks` และ `localStorage`
-    const isBookmarked = bookmarks.includes(researchId);
-    const updatedBookmarks = isBookmarked
-      ? bookmarks.filter((id) => id !== researchId)
-      : [...bookmarks, researchId];
-
-    setBookmarks(updatedBookmarks); // อัปเดตสถานะ `bookmarks` ใหม่
-    localStorage.setItem("bookmarks", JSON.stringify(updatedBookmarks)); // บันทึก `bookmarks` ใหม่ใน localStorage
+  
+    // ส่งคำขอ POST ไปที่เซิร์ฟเวอร์
+    try {
+      const response = await fetch("http://localhost:5000/bookmarks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ research_id: researchId, user_id: userId }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+  
+      // แจ้งเตือนว่าสำเร็จ
+      alert("บุ๊คมาร์คสำเร็จ!");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("เกิดข้อผิดพลาดในการบุ๊คมาร์ค");
+    }
   };
+  
+  
 
   const handleSelectForComparison = (item, e) => {
     e.stopPropagation();
