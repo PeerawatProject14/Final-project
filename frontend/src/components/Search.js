@@ -35,7 +35,7 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
     }
   };
 
-  const handleCompare = async () => {
+  const handleCompare = () => {
     if (selectedItems.length !== 2) {
       alert('กรุณาเลือกงานวิจัย 2 ชิ้นเพื่อทำการเปรียบเทียบ');
       return;
@@ -86,7 +86,7 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleBookmark(research.id);
+                          handleBookmark(research.id); // ใช้งาน handleBookmark ที่ถูกส่งมา
                         }}
                         className={`btn ${bookmarks.includes(research.id) ? 'bookmark-selected' : 'outline-bookmark'}`}
                       >

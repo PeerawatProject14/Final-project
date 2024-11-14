@@ -9,21 +9,32 @@ function UserResearch() {
   const [bookmarks, setBookmarks] = useState([]);
   const navigate = useNavigate();
 
-  // ดึงข้อมูลจาก localStorage เมื่อโหลดหน้า
+  // ตรวจสอบสถานะการล็อกอินและล้างข้อมูลหากยังไม่ได้ล็อกอิน
   useEffect(() => {
-    const storedDescription = localStorage.getItem("researchDescription");
-    const storedResearch = localStorage.getItem("similarResearch");
-    const storedBookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+    const userId = localStorage.getItem("userId");
 
-    if (storedDescription) {
-      setResearchDescription(storedDescription);
+    if (!userId) {
+      // ถ้ายังไม่ได้ล็อกอิน ให้ล้างข้อมูลที่เกี่ยวข้อง
+      localStorage.removeItem("researchDescription");
+      localStorage.removeItem("similarResearch");
+      localStorage.removeItem("bookmarks");
+      setBookmarks([]); // รีเซ็ต bookmarks เป็นค่าว่างเมื่อยังไม่ได้ล็อกอิน
+    } else {
+      // ถ้าล็อกอินแล้ว ดึงข้อมูลจาก localStorage
+      const storedDescription = localStorage.getItem("researchDescription");
+      const storedResearch = localStorage.getItem("similarResearch");
+      const storedBookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+
+      if (storedDescription) {
+        setResearchDescription(storedDescription);
+      }
+
+      if (storedResearch) {
+        setSimilarResearch(JSON.parse(storedResearch));
+      }
+
+      setBookmarks(storedBookmarks);
     }
-
-    if (storedResearch) {
-      setSimilarResearch(JSON.parse(storedResearch));
-    }
-
-    setBookmarks(storedBookmarks);
   }, []);
 
   const handleSaveData = () => {
@@ -55,8 +66,31 @@ function UserResearch() {
     }
   };
 
+  const handleBookmark = (researchId, e) => {
+    e.stopPropagation();
+
+    // ตรวจสอบการล็อกอินก่อนใช้งานฟังก์ชันบุ๊คมาร์ค
+    if (!localStorage.getItem("userId")) {
+      alert("กรุณาล็อกอินก่อนเพื่อบุ๊คมาร์ค");
+      return;
+    }
+
+    // ปรับการอัปเดต `bookmarks` และ `localStorage`
+    const isBookmarked = bookmarks.includes(researchId);
+    const updatedBookmarks = isBookmarked
+      ? bookmarks.filter((id) => id !== researchId)
+      : [...bookmarks, researchId];
+
+    setBookmarks(updatedBookmarks); // อัปเดตสถานะ `bookmarks` ใหม่
+    localStorage.setItem("bookmarks", JSON.stringify(updatedBookmarks)); // บันทึก `bookmarks` ใหม่ใน localStorage
+  };
+
   const handleSelectForComparison = (item, e) => {
     e.stopPropagation();
+    if (!localStorage.getItem("userId")) {
+      alert("กรุณาล็อกอินก่อนเพื่อเลือกเปรียบเทียบ");
+      return;
+    }
     setSelectedResearch(item);
   };
 
@@ -80,49 +114,6 @@ function UserResearch() {
     }
   };
 
-  const handleBookmark = async (research, e) => {
-    e.stopPropagation();
-  
-    // Toggle the bookmark in local state
-    const updatedBookmarks = bookmarks.includes(research.id)
-      ? bookmarks.filter((id) => id !== research.id)
-      : [...bookmarks, research.id];
-  
-    setBookmarks(updatedBookmarks);
-    localStorage.setItem("bookmarks", JSON.stringify(updatedBookmarks));
-  
-    // Send the bookmark data to the server
-    const userId = localStorage.getItem("userId"); // Assuming the user ID is stored in localStorage
-    if (userId) {
-      try {
-        const response = await fetch("http://localhost:5000/bookmarks", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            research_id: research.id,
-            user_id: userId,
-          }),
-        });
-  
-        if (!response.ok) {
-          throw new Error("Failed to save bookmark on server");
-        }
-        const data = await response.json();
-        console.log("Bookmark saved:", data); // Handle success if needed
-      } catch (error) {
-        console.error("Error saving bookmark:", error); // Handle errors
-      }
-    } else {
-      console.error("User ID not found in localStorage");
-    }
-  
-    // Optionally, navigate to the home page or another component after bookmarking
-    navigate("/", { state: { bookmarks: updatedBookmarks } });
-  };
-  
-  
   const handleCardClick = (item) => {
     navigate(`/user-research/${item.id}`);
   };
@@ -164,7 +155,7 @@ function UserResearch() {
                 </p>
                 <div className="research-buttons">
                   <button
-                    onClick={(e) => handleBookmark(item, e)}
+                    onClick={(e) => handleBookmark(item.id, e)}
                     className={`btn ${
                       bookmarks.includes(item.id)
                         ? "bookmark-selected"
@@ -179,9 +170,7 @@ function UserResearch() {
                       selectedResearch === item ? "selected" : "outline-selected"
                     }`}
                   >
-                    {selectedResearch === item
-                      ? "ยกเลิกเลือก"
-                      : "เลือกเปรียบเทียบ"}
+                    {selectedResearch === item ? "ยกเลิกเลือก" : "เลือกเปรียบเทียบ"}
                   </button>
                 </div>
               </div>
