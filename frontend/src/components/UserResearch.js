@@ -13,17 +13,11 @@ function UserResearch() {
   useEffect(() => {
     const userId = localStorage.getItem("userId");
 
-    if (!userId) {
-      // ถ้ายังไม่ได้ล็อกอิน ให้ล้างข้อมูลที่เกี่ยวข้อง
-      localStorage.removeItem("researchDescription");
-      localStorage.removeItem("similarResearch");
-      localStorage.removeItem("bookmarks");
-      setBookmarks([]); // รีเซ็ต bookmarks เป็นค่าว่างเมื่อยังไม่ได้ล็อกอิน
-    } else {
-      // ถ้าล็อกอินแล้ว ดึงข้อมูลจาก localStorage
-      const storedDescription = localStorage.getItem("researchDescription");
-      const storedResearch = localStorage.getItem("similarResearch");
-      const storedBookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+    if (userId) {
+      // ถ้าล็อกอินแล้ว ดึงข้อมูลจาก localStorage ที่แยกตาม userId
+      const storedDescription = localStorage.getItem(`researchDescription_${userId}`);
+      const storedResearch = localStorage.getItem(`similarResearch_${userId}`);
+      const storedBookmarks = JSON.parse(localStorage.getItem(`bookmarks_${userId}`)) || [];
 
       if (storedDescription) {
         setResearchDescription(storedDescription);
@@ -34,79 +28,112 @@ function UserResearch() {
       }
 
       setBookmarks(storedBookmarks);
+    } else {
+      // ถ้าไม่ได้ล็อกอิน (Guest) ใช้ข้อมูลที่ไม่ได้เก็บใน localStorage
+      setResearchDescription(""); // เริ่มต้นช่องค้นหาว่าง
+      setSimilarResearch(null); // ไม่มีผลลัพธ์
+      setBookmarks([]); // ไม่มีบุ๊คมาร์ค
     }
   }, []);
 
   const handleSaveData = () => {
+    const userId = localStorage.getItem("userId");
+
+    // ถ้าล็อกอินแล้วให้เก็บข้อมูลใน localStorage สำหรับ userId
     if (researchDescription) {
       const researchData = { description: researchDescription };
 
-      localStorage.setItem("researchDescription", researchDescription);
+      if (userId) {
+        // สำหรับผู้ใช้ที่ล็อกอิน
+        localStorage.setItem(`researchDescription_${userId}`, researchDescription);
 
-      fetch("http://localhost:5000/api/process-userresearch", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(researchData),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
+        fetch("http://localhost:5000/api/process-userresearch", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(researchData),
         })
-        .then((data) => {
-          setSimilarResearch(data);
-          localStorage.setItem("similarResearch", JSON.stringify(data));
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            setSimilarResearch(data);
+            localStorage.setItem(`similarResearch_${userId}`, JSON.stringify(data));
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      } else {
+        // สำหรับผู้ใช้ที่ไม่ได้ล็อกอิน (Guest)
+        fetch("http://localhost:5000/api/process-userresearch", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(researchData),
         })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            setSimilarResearch(data);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
     }
   };
 
   const handleBookmark = async (researchId, e) => {
     e.stopPropagation();
-  
-    // ตรวจสอบการล็อกอินก่อนใช้งานฟังก์ชันบุ๊คมาร์ค
     const userId = localStorage.getItem("userId");
-    if (!userId) {
-      alert("กรุณาล็อกอินก่อนเพื่อบุ๊คมาร์ค");
-      return;
-    }
-  
-    // ส่งคำขอ POST ไปที่เซิร์ฟเวอร์
-    try {
-      const response = await fetch("http://localhost:5000/bookmarks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ research_id: researchId, user_id: userId }),
-      });
-  
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+
+    if (userId) {
+      // สำหรับผู้ใช้ที่ล็อกอิน
+      try {
+        const response = await fetch("http://localhost:5000/bookmarks", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ research_id: researchId, user_id: userId }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        alert("บุ๊คมาร์คสำเร็จ!");
+
+        const updatedBookmarks = [...bookmarks, researchId];
+        setBookmarks(updatedBookmarks);
+        localStorage.setItem(`bookmarks_${userId}`, JSON.stringify(updatedBookmarks));
+      } catch (error) {
+        console.error("Error:", error);
+        alert("เกิดข้อผิดพลาดในการบุ๊คมาร์ค");
       }
-  
-      // แจ้งเตือนว่าสำเร็จ
-      alert("บุ๊คมาร์คสำเร็จ!");
-    } catch (error) {
-      console.error("Error:", error);
-      alert("เกิดข้อผิดพลาดในการบุ๊คมาร์ค");
+    } else {
+      // สำหรับ guest
+      alert("กรุณาล็อกอินก่อนเพื่อบุ๊คมาร์ค");
     }
   };
-  
-  
 
   const handleSelectForComparison = (item, e) => {
     e.stopPropagation();
-    if (!localStorage.getItem("userId")) {
-      alert("กรุณาล็อกอินก่อนเพื่อเลือกเปรียบเทียบ");
-      return;
+    // ถ้ากดเลือกแล้วจะยกเลิกการเลือก
+    if (selectedResearch === item) {
+      setSelectedResearch(null); // ยกเลิกการเลือก
+    } else {
+      setSelectedResearch(item); // เลือกงานวิจัยใหม่
     }
-    setSelectedResearch(item);
   };
 
   const handleConfirmComparison = () => {
@@ -192,7 +219,7 @@ function UserResearch() {
             </div>
           ))}
           <button
-            className="btn btn-primary compare-button"
+            className="btn btn-primary compare-button-x"
             onClick={handleConfirmComparison}
             disabled={!selectedResearch}
           >

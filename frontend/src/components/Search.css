@@ -155,8 +155,38 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
+    align-items: center;
   }
-  
+  .compare-button-x {
+    padding: 1rem 2rem;
+    background-color: #007bff;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* ใช้ transition เพียงแค่สี */
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%); /* ปรับตำแหน่งให้อยู่ตรงกลาง */
+    z-index: 10;
+    width: 100%;
+    max-width: 250px;
+    display: block;
+    align-items: center;
+}
+.compare-button-x:disabled {
+    background-color: #ccc ;
+    cursor: not-allowed ;
+}
+
+.compare-button-x:hover {
+    background-color: #0056b3 ; /* แค่เปลี่ยนสีพื้นหลังในกรณี hover */
+    transform: translateX(-50%) !important; /* ปรับตำแหน่งให้อยู่ตรงกลาง */
+    /* ไม่มีการใช้ transform หรือการเปลี่ยนแปลงตำแหน่ง */
+}
+
   .compare-button:disabled {
     background-color: #ccc;
     cursor: not-allowed;

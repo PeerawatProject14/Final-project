@@ -5,17 +5,17 @@ import './ResearchData.css';
 const ResearchData = () => {
   const { research_id } = useParams();
   const navigate = useNavigate();
-  const [research, setResearch] = useState(null); // เก็บข้อมูลที่ต้องการ
+  const [research, setResearch] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [storedResearch, setStoredResearch] = useState(null);
-  const [similarResearch, setSimilarResearch] = useState(null); // เก็บผลลัพธ์ที่ได้จาก Python script
+  const [storedResearch, setStoredResearch] = useState(null); // เพิ่มที่นี่
+  const [similarResearch, setSimilarResearch] = useState(null);
+  const [selectedResearch, setSelectedResearch] = useState(null);
 
   const handleBackClick = () => {
-    navigate(-1); // กลับไปหน้าก่อนหน้า
+    navigate(-1);
   };
 
-  // ฟังก์ชันสำหรับเก็บข้อมูลเมื่อผู้ใช้กดปุ่ม
   const handleSaveData = () => {
     if (research) {
       const researchData = {
@@ -23,11 +23,10 @@ const ResearchData = () => {
         name: research.name,
         description: research.description,
         PredictedLabel: research.PredictedLabel,
-        embedding: research.embedding
+        embedding: research.embedding,
       };
-      setStoredResearch(researchData);
+      setStoredResearch(researchData);  // ใช้ setStoredResearch เพื่อเก็บข้อมูล
 
-      // ส่งข้อมูลไปยัง Express API เพื่อประมวลผลใน Python script
       fetch('http://localhost:5000/api/process-research', {
         method: 'POST',
         headers: {
@@ -42,8 +41,7 @@ const ResearchData = () => {
           return response.json();
         })
         .then((data) => {
-          // กำหนดค่า similarResearch ตามข้อมูลที่ได้จาก Python script
-          setSimilarResearch(data);  // เก็บข้อมูลที่ส่งมาจาก Backend
+          setSimilarResearch(data);
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -69,6 +67,41 @@ const ResearchData = () => {
 
     fetchResearchData();
   }, [research_id]);
+
+  const handleSelectForComparison = (item, e) => {
+    e.stopPropagation();
+    if (selectedResearch === item) {
+      setSelectedResearch(null);
+    } else {
+      setSelectedResearch(item);
+    }
+  };
+
+  const handleConfirmComparison = () => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert('กรุณาล็อกอินก่อนที่จะทำการเปรียบเทียบ');
+      return;
+    }
+
+    if (!selectedResearch) {
+      alert('กรุณาเลือกงานวิจัยที่ต้องการเปรียบเทียบ');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `คุณต้องการเปรียบเทียบงานวิจัย: ${selectedResearch.name} หรือไม่?`
+    );
+
+    if (confirmed) {
+      navigate("/compare", {
+        state: {
+          description1: research.description,
+          description2: selectedResearch.description,
+        },
+      });
+    }
+  };
 
   if (loading) {
     return <p>กำลังโหลดข้อมูล...</p>;
@@ -101,19 +134,33 @@ const ResearchData = () => {
           <button onClick={handleSaveData} className="btn btn-primary mb-3">ค้นหางานวิจัยที่คล้ายกัน</button>
         </div>
 
-        {/* แสดงการ์ดวิจัยที่คล้ายกัน */}
         {similarResearch && similarResearch.results && (
           <div className="similar-research-container">
             {similarResearch.results.map((item) => (
-              <div className="research-card" key={item.id}>
-                <h4>{item.name}</h4>
-                <p><strong>id:</strong> {item.id}</p>
-                <p><strong>description:</strong> {item.description}</p>
-                <p><strong>PredictedLabel:</strong> {item.PredictedLabel}</p>
-                <p><strong>similarity:</strong> {item.similarity}</p>
-                {/* คุณสามารถเพิ่มข้อมูลอื่น ๆ ที่ต้องการแสดงที่นี่ */}
+              <div className="research-card-box" key={item.id}>
+                <div className="research-card">
+                  <h4>{item.name}</h4>
+                  <p><strong>id:</strong> {item.id}</p>
+                  <p><strong>description:</strong> {item.description}</p>
+
+                  <div className="research-buttons">
+                    <button
+                      onClick={(e) => handleSelectForComparison(item, e)}
+                      className={`btn ${selectedResearch === item ? "selected" : "outline-selected"}`}
+                    >
+                      {selectedResearch === item ? "ยกเลิกเลือก" : "เลือกเปรียบเทียบ"}
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
+            <button
+              className="btn btn-primary compare-button-x"
+              onClick={handleConfirmComparison}
+              disabled={!selectedResearch}
+            >
+              ยืนยันเปรียบเทียบ
+            </button>
           </div>
         )}
       </div>
