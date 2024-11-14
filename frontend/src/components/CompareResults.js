@@ -11,6 +11,7 @@ const CompareResults = () => {
   const [compareResult, setCompareResult] = useState('');
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false); // สถานะการบันทึก
+  const [error, setError] = useState(null); // สถานะสำหรับ error
   const userId = localStorage.getItem('userId'); // ดึง userId จาก localStorage
 
   useEffect(() => {
@@ -28,7 +29,9 @@ const CompareResults = () => {
         });
 
         if (!response.ok) {
-          throw new Error('Error comparing research');
+          const errorText = await response.text();
+          setError(`Error: ${response.status} - ${response.statusText}`);
+          throw new Error(errorText);
         }
 
         const data = await response.json();
@@ -55,6 +58,12 @@ const CompareResults = () => {
         body: JSON.stringify({ output: compareResult, user_id: userId }),
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        setError(`Error: ${response.status} - ${response.statusText}`);
+        throw new Error(errorText);
+      }
+
       const data = await response.json();
       if (data.message) {
         alert('บันทึกข้อมูลสำเร็จ');
@@ -76,6 +85,7 @@ const CompareResults = () => {
           <p className="loading">กำลังโหลดข้อมูล...</p>
         ) : (
           <>
+            {error && <p className="error-message">{error}</p>}
             <ReactMarkdown className="result">{compareResult}</ReactMarkdown>
             <div className="button-container">
               <button

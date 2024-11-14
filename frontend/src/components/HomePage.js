@@ -81,12 +81,20 @@ function HomePage() {
         },
         body: JSON.stringify({ research_id: researchId, user_id: userId }),
       });
-
+    
       const data = await response.json();
       console.log('Response from server:', data);
+    
+      // เช็คสถานะการตอบกลับจากเซิร์ฟเวอร์
+      if (response.ok) {
+        alert('บุ๊คมาร์คสำเร็จ!');
+      } else {
+        alert('เกิดข้อผิดพลาดในการบุ๊คมาร์ค');
+      }
     } catch (error) {
-      console.error('Error adding bookmark:', error);
-    }
+      console.error('เกิดข้อผิดพลาดในการเพิ่ม Bookmark:', error);
+      alert('เกิดข้อผิดพลาดในการบันทึก Bookmark');
+    }    
   };
 
   const handleBookmarkClick = () => {

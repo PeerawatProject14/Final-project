@@ -8,7 +8,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const port = 5000;
-const apiKey = "Api";
+const apiKey = "API";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const dbConfig = {
@@ -268,7 +268,7 @@ app.post('/api/compare', async (req, res) => {
     // ตั้งค่าการใช้ระบบสำหรับการเปรียบเทียบ
     const model = genAI.getGenerativeModel({ 
       model: "gemini-1.5-pro",
-      systemInstruction: "เปรียบเทียบงานวิจัยโดยเขียนบอกด้วยว่ากำลังเปรียบเทียบอะไรอยู่ และหาความคล้ายกัน และการนำมาประยุกต์ใช้ร่วมกัน(ตอบมาเยอะๆ)"
+      systemInstruction: "เปรียบเทียบงานวิจัยโดยเขียนบอกด้วยว่ากำลังเปรียบเทียบอะไรอยู่ และหาความคล้ายกัน และการนำมาประยุกต์ใช้ร่วมกัน(ตอบมาเยอะๆ และ ไม่ต้องเขียนหัวข้อ ห้ามใช้ tag h)"
     });
 
     // ส่งคำอธิบายสองรายการเพื่อให้โมเดลทำการเปรียบเทียบ
@@ -332,6 +332,32 @@ app.get('/bookmarks/:user_id', async (req, res) => {
   }
 });
 
+app.delete('/bookmarks/:bookmark_id', async (req, res) => {
+  const { bookmark_id } = req.params;
+
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
+    const [result] = await connection.execute(
+      'DELETE FROM bookmark WHERE id = ?',
+      [bookmark_id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Bookmark not found' });
+    }
+
+    res.status(200).json({ message: 'Bookmark deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting bookmark:', err);
+    res.status(500).json({ message: 'Error deleting bookmark' });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+});
+
 app.get('/research/:research_id', async (req, res) => {
   const research_id = req.params.research_id;
 
@@ -376,6 +402,33 @@ app.get('/summaries/:userId', async (req, res) => {
     res.status(500).json({ error: 'Error fetching summaries from database' });
   }
 });
+
+app.delete('/summaries/:summary_id', async (req, res) => {
+  const { summary_id } = req.params;
+
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
+    const [result] = await connection.execute(
+      'DELETE FROM gemini WHERE id = ?',
+      [summary_id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Summary not found' });
+    }
+
+    res.status(200).json({ message: 'Summary deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting summary:', err);
+    res.status(500).json({ message: 'Error deleting summary' });
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+});
+
 
 
 app.get('/status', (req, res) => {

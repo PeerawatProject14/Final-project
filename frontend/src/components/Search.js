@@ -36,10 +36,15 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
   };
 
   const handleCompare = () => {
-    if (selectedItems.length !== 2) {
-      alert('กรุณาเลือกงานวิจัย 2 ชิ้นเพื่อทำการเปรียบเทียบ');
-      return;
-    }
+      if (!localStorage.getItem("userId")) {
+        alert("กรุณาล็อกอินก่อนเพื่อเลือกเปรียบเทียบ");
+        return;
+      }
+      if (selectedItems.length !== 2) {
+        alert('กรุณาเลือกงานวิจัย 2 ชิ้นเพื่อทำการเปรียบเทียบ');
+        return;
+      }
+      // โค้ดสำหรับการเปรียบเทียบงานวิจัยที่เลือก 
 
     navigate('/compare', {
       state: {
