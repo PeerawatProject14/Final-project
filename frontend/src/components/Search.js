@@ -87,7 +87,7 @@ const Search = ({ researchData, truncateText, handleBookmark, bookmarks }) => {
                         onClick={(e) => {
                           e.stopPropagation();
                           handleBookmark(research.id); // เรียกฟังก์ชัน handleBookmark
-                          alert('บุ๊คมาร์คสำเร็จ'); // แจ้งเตือนว่าบุ๊คมาร์คสำเร็จ
+                    
                         }}
                         className={`btn ${bookmarks.includes(research.id) ? 'bookmark-selected' : 'outline-bookmark'}`}
                       >

@@ -1,4 +1,3 @@
-// ในไฟล์ HomePage.js
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './App.css';
@@ -55,6 +54,13 @@ function HomePage() {
 
   const handleBookmark = async (researchId) => {
     const userId = localStorage.getItem('userId');
+    
+    // ตรวจสอบว่าผู้ใช้ล็อกอินแล้วหรือยัง
+    if (!userId) {
+      alert('กรุณาล็อกอินก่อนเพื่อบุ๊คมาร์ค');
+      return;
+    }
+
     console.log('Checking if bookmark exists:', { research_id: researchId, user_id: userId });
 
     const checkResponse = await fetch(`http://localhost:5000/bookmarks/check?research_id=${researchId}&user_id=${userId}`);
@@ -84,6 +90,10 @@ function HomePage() {
   };
 
   const handleBookmarkClick = () => {
+    if (!isLoggedIn) {
+      alert('กรุณาล็อกอินก่อนเพื่อไปยังหน้า Bookmark');
+      return;
+    }
     navigate('/bookmark'); 
   };
 
