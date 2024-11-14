@@ -137,15 +137,21 @@ function UserResearch() {
   };
 
   const handleConfirmComparison = () => {
+    // ตรวจสอบ userId ใน localStorage
+    if (!localStorage.getItem("userId")) {
+      alert("กรุณาล็อกอินก่อนเพื่อเลือกเปรียบเทียบ");
+      return;
+    }
+  
     if (!selectedResearch) {
       alert("กรุณาเลือกงานวิจัยที่ต้องการเปรียบเทียบ");
       return;
     }
-
+  
     const confirmed = window.confirm(
       `คุณต้องการเปรียบเทียบงานวิจัย: ${selectedResearch.name} หรือไม่?`
     );
-
+  
     if (confirmed) {
       navigate("/compare", {
         state: {
@@ -155,6 +161,7 @@ function UserResearch() {
       });
     }
   };
+  
 
   const handleCardClick = (item) => {
     navigate(`/user-research/${item.id}`);

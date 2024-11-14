@@ -166,7 +166,7 @@
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease; /* ใช้ transition เพียงแค่สี */
-    position: fixed;
+    position: sticky;
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%); /* ปรับตำแหน่งให้อยู่ตรงกลาง */
