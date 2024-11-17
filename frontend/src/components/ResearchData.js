@@ -136,24 +136,26 @@ const ResearchData = () => {
 
         {similarResearch && similarResearch.results && (
           <div className="similar-research-container">
-            {similarResearch.results.map((item) => (
-              <div className="research-card-box" key={item.id}>
-                <div className="research-card">
-                  <h4>{item.name}</h4>
-                  <p><strong>id:</strong> {item.id}</p>
-                  <p><strong>description:</strong> {item.description}</p>
+            {similarResearch.results
+              .filter((item) => item.id !== research.id) // กรอง id ที่ไม่ซ้ำ
+              .map((item) => (
+                <div className="research-card-box" key={item.id}>
+                  <div className="research-card">
+                    <h4>{item.name}</h4>
+                    <p><strong>id:</strong> {item.id}</p>
+                    <p><strong>description:</strong> {item.description}</p>
 
-                  <div className="research-buttons">
-                    <button
-                      onClick={(e) => handleSelectForComparison(item, e)}
-                      className={`btn ${selectedResearch === item ? "selected" : "outline-selected"}`}
-                    >
-                      {selectedResearch === item ? "ยกเลิกเลือก" : "เลือกเปรียบเทียบ"}
-                    </button>
+                    <div className="research-buttons">
+                      <button
+                        onClick={(e) => handleSelectForComparison(item, e)}
+                        className={`btn ${selectedResearch === item ? "selected" : "outline-selected"}`}
+                      >
+                        {selectedResearch === item ? "ยกเลิกเลือก" : "เลือกเปรียบเทียบ"}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
             <button
               className="btn btn-primary compare-button-x"
               onClick={handleConfirmComparison}

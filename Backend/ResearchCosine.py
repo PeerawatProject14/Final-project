@@ -76,7 +76,7 @@ def main():
     research_df['similarity'] = similarities
 
     # เรียงตาม similarity จากมากไปน้อยและเลือกแค่ 10 แถวแรก
-    top_results_df = research_df.sort_values(by='similarity', ascending=False).head(10)
+    top_results_df = research_df.sort_values(by='similarity', ascending=False).head(11)
 
     # แปลงผลลัพธ์เป็น JSON รวมทุกคอลัมน์
     # เปลี่ยน ndarray เป็น list เพื่อให้สามารถแปลงเป็น JSON ได้
