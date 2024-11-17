@@ -7,14 +7,13 @@ function UserResearch() {
   const [similarResearch, setSimilarResearch] = useState(null);
   const [selectedResearch, setSelectedResearch] = useState(null);
   const [bookmarks, setBookmarks] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // สถานะการโหลด
   const navigate = useNavigate();
 
-  // ตรวจสอบสถานะการล็อกอินและล้างข้อมูลหากยังไม่ได้ล็อกอิน
   useEffect(() => {
     const userId = localStorage.getItem("userId");
 
     if (userId) {
-      // ถ้าล็อกอินแล้ว ดึงข้อมูลจาก localStorage ที่แยกตาม userId
       const storedDescription = localStorage.getItem(`researchDescription_${userId}`);
       const storedResearch = localStorage.getItem(`similarResearch_${userId}`);
       const storedBookmarks = JSON.parse(localStorage.getItem(`bookmarks_${userId}`)) || [];
@@ -29,129 +28,99 @@ function UserResearch() {
 
       setBookmarks(storedBookmarks);
     } else {
-      // ถ้าไม่ได้ล็อกอิน (Guest) ใช้ข้อมูลที่ไม่ได้เก็บใน localStorage
-      setResearchDescription(""); // เริ่มต้นช่องค้นหาว่าง
-      setSimilarResearch(null); // ไม่มีผลลัพธ์
-      setBookmarks([]); // ไม่มีบุ๊คมาร์ค
+      setResearchDescription("");
+      setSimilarResearch(null);
+      setBookmarks([]);
     }
   }, []);
 
   const handleSaveData = () => {
+    if (!researchDescription) return;
+
+    setIsLoading(true); // เริ่มโหลดข้อมูล
     const userId = localStorage.getItem("userId");
+    const researchData = { description: researchDescription };
 
-    // ถ้าล็อกอินแล้วให้เก็บข้อมูลใน localStorage สำหรับ userId
-    if (researchDescription) {
-      const researchData = { description: researchDescription };
-
-      if (userId) {
-        // สำหรับผู้ใช้ที่ล็อกอิน
-        localStorage.setItem(`researchDescription_${userId}`, researchDescription);
-
-        fetch("http://localhost:5000/api/process-userresearch", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(researchData),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            setSimilarResearch(data);
-            localStorage.setItem(`similarResearch_${userId}`, JSON.stringify(data));
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
-      } else {
-        // สำหรับผู้ใช้ที่ไม่ได้ล็อกอิน (Guest)
-        fetch("http://localhost:5000/api/process-userresearch", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(researchData),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            setSimilarResearch(data);
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
-      }
-    }
+    fetch("http://localhost:5000/api/process-userresearch", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(researchData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setSimilarResearch(data);
+        if (userId) {
+          localStorage.setItem(`similarResearch_${userId}`, JSON.stringify(data));
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      })
+      .finally(() => {
+        setIsLoading(false); // เสร็จสิ้นการโหลด
+      });
   };
 
   const handleBookmark = async (researchId, e) => {
     e.stopPropagation();
     const userId = localStorage.getItem("userId");
 
-    if (userId) {
-      // สำหรับผู้ใช้ที่ล็อกอิน
-      try {
-        const response = await fetch("http://localhost:5000/bookmarks", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ research_id: researchId, user_id: userId }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        alert("บุ๊คมาร์คสำเร็จ!");
-
-        const updatedBookmarks = [...bookmarks, researchId];
-        setBookmarks(updatedBookmarks);
-        localStorage.setItem(`bookmarks_${userId}`, JSON.stringify(updatedBookmarks));
-      } catch (error) {
-        console.error("Error:", error);
-        alert("เกิดข้อผิดพลาดในการบุ๊คมาร์ค");
-      }
-    } else {
-      // สำหรับ guest
+    if (!userId) {
       alert("กรุณาล็อกอินก่อนเพื่อบุ๊คมาร์ค");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/bookmarks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ research_id: researchId, user_id: userId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      alert("บุ๊คมาร์คสำเร็จ!");
+
+      const updatedBookmarks = [...bookmarks, researchId];
+      setBookmarks(updatedBookmarks);
+      localStorage.setItem(`bookmarks_${userId}`, JSON.stringify(updatedBookmarks));
+    } catch (error) {
+      console.error("Error:", error);
+      alert("เกิดข้อผิดพลาดในการบุ๊คมาร์ค");
     }
   };
 
   const handleSelectForComparison = (item, e) => {
     e.stopPropagation();
-    // ถ้ากดเลือกแล้วจะยกเลิกการเลือก
-    if (selectedResearch === item) {
-      setSelectedResearch(null); // ยกเลิกการเลือก
-    } else {
-      setSelectedResearch(item); // เลือกงานวิจัยใหม่
-    }
+    setSelectedResearch(selectedResearch === item ? null : item);
   };
 
   const handleConfirmComparison = () => {
-    // ตรวจสอบ userId ใน localStorage
     if (!localStorage.getItem("userId")) {
       alert("กรุณาล็อกอินก่อนเพื่อเลือกเปรียบเทียบ");
       return;
     }
-  
+
     if (!selectedResearch) {
       alert("กรุณาเลือกงานวิจัยที่ต้องการเปรียบเทียบ");
       return;
     }
-  
+
     const confirmed = window.confirm(
       `คุณต้องการเปรียบเทียบงานวิจัย: ${selectedResearch.name} หรือไม่?`
     );
-  
+
     if (confirmed) {
       navigate("/compare", {
         state: {
@@ -161,7 +130,6 @@ function UserResearch() {
       });
     }
   };
-  
 
   const handleCardClick = (item) => {
     navigate(`/user-research/${item.id}`);
@@ -173,6 +141,10 @@ function UserResearch() {
       <p className="search-subtitle">
         กรุณากรอกคำอธิบายงานวิจัยของคุณในช่องค้นหา
         เพื่อให้ระบบสามารถวิเคราะห์และค้นหางานวิจัยที่มีเนื้อหาคล้ายคลึงกันได้อย่างแม่นยำ
+        ข้อแนะนำเพิ่มเติม: โปรดใช้ประโยคที่มีความยาวเพียงพอและชัดเจน
+        ไม่ควรใส่คำอธิบายสั้นเกินไปหรือใช้อักษรพิเศษ เช่น อิโมจิ จุดขีดเส้น
+        หรือสัญลักษณ์พิเศษต่างๆ
+        เพื่อให้ได้ผลลัพธ์การค้นหาที่มีความเกี่ยวข้องมากที่สุด
       </p>
       <div className="custom-search-container">
         <textarea
@@ -181,61 +153,61 @@ function UserResearch() {
           value={researchDescription}
           onChange={(e) => setResearchDescription(e.target.value)}
         />
-        <button className="custom-search-button" onClick={handleSaveData}>
-          ค้นหา
+        <button className="custom-search-button" onClick={handleSaveData} disabled={isLoading}>
+          {isLoading ? "กำลังค้นหา..." : "ค้นหา"}
         </button>
       </div>
-
-      {similarResearch && similarResearch.results && (
-        <div className="similar-research-container">
-          <h3>ผลลัพธ์ที่คล้ายกัน:</h3>
-          {similarResearch.results.map((item) => (
-            <div className="research-card-box" key={item.id}>
-              <div
-                className="research-card"
-                onClick={() => handleCardClick(item)}
-              >
-                <h4>{item.name}</h4>
-                <p>
-                  <strong>id:</strong> {item.id}
-                </p>
-                <p>
-                  <strong>description:</strong> {item.description}
-                </p>
-                <div className="research-buttons">
+  
+      {isLoading ? (
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+        </div>
+      ) : (
+        similarResearch &&
+        similarResearch.results && (
+          <div className="similar-research-container">
+            <h3>ผลลัพธ์ที่คล้ายกัน:</h3>
+            {similarResearch.results.map((item) => (
+              <div className="research-card-box" key={item.id}>
+                <div className="research-card" onClick={() => handleCardClick(item)}>
+                  <h4>{item.name}</h4>
+                  <p>
+                    <strong>id:</strong> {item.id}
+                  </p>
+                  <p>
+                    <strong>description:</strong> {item.description}
+                  </p>
+                  <div className="research-buttons">
                   <button
                     onClick={(e) => handleBookmark(item.id, e)}
-                    className={`btn ${
-                      bookmarks.includes(item.id)
-                        ? "bookmark-selected"
-                        : "outline-bookmark"
-                    }`}
+                    className={`btn outline-bookmark`}
                   >
-                    {bookmarks.includes(item.id) ? "ยกเลิกบุ๊คมาร์ค" : "บุ๊คมาร์ค"}
+                    บุ๊คมาร์ค
                   </button>
-                  <button
-                    onClick={(e) => handleSelectForComparison(item, e)}
-                    className={`btn ${
-                      selectedResearch === item ? "selected" : "outline-selected"
-                    }`}
-                  >
-                    {selectedResearch === item ? "ยกเลิกเลือก" : "เลือกเปรียบเทียบ"}
-                  </button>
+                    <button
+                      onClick={(e) => handleSelectForComparison(item, e)}
+                      className={`btn ${
+                        selectedResearch === item ? "selected" : "outline-selected"
+                      }`}
+                    >
+                      {selectedResearch === item ? "ยกเลิกเลือก" : "เลือกเปรียบเทียบ"}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-          <button
-            className="btn btn-primary compare-button-x"
-            onClick={handleConfirmComparison}
-            disabled={!selectedResearch}
-          >
-            ยืนยันเปรียบเทียบ
-          </button>
-        </div>
+            ))}
+            <button
+              className="btn btn-primary compare-button-x"
+              onClick={handleConfirmComparison}
+              disabled={!selectedResearch}
+            >
+              ยืนยันเปรียบเทียบ
+            </button>
+          </div>
+        )
       )}
     </div>
-  );
+  );  
 }
 
 export default UserResearch;
