@@ -123,6 +123,7 @@ const ResearchData = () => {
         <p><strong>id:</strong> {research.id}</p>
         <p><strong>doi:</strong> {research.doi}</p>
         <p><strong>name:</strong> {research.name}</p>
+        <p><strong>researcher:</strong> {research.researcher}</p>
         <p><strong>co_researcher:</strong> {research.co_researcher}</p>
         <p><strong>institution:</strong> {research.institution}</p>
         <p><strong>year:</strong> {research.year}</p>
